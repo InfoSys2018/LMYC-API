@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LmycWeb.Models.AccountViewModels
+namespace LmycWeb.ViewModels.AccountViewModels
 {
     // TO-DO: add reguired fields from ApplicationUser
     public class RegisterViewModel

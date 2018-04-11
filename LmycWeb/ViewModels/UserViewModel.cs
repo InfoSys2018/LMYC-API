@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LmycWeb.Models
+namespace LmycWeb.ViewModels
 {
     public class UserViewModel
     {

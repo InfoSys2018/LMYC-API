@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using LmycWeb.ViewModels;
 
 namespace LmycWeb.Controllers
 {

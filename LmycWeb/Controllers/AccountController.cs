@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using LmycWeb.Models;
-using LmycWeb.Models.AccountViewModels;
 using LmycWeb.Services;
+using LmycWeb.ViewModels.AccountViewModels;
 
 namespace LmycWeb.Controllers
 {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LmycWeb.Models.ManageViewModels
+namespace LmycWeb.ViewModels.ManageViewModels
 {
     public class ChangePasswordViewModel
     {
