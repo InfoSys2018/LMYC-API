@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LmycWeb.Models.AccountViewModels
 {
+    // TO-DO: add reguired fields from ApplicationUser
     public class RegisterViewModel
     {
         [Required]
