@@ -110,7 +110,9 @@ namespace LmycWeb.Models
                     EndDateTime = new DateTime(2018,6,30,12,0,0),
                     CreditsUsed = 36,
                     Boat = db.Boats.FirstOrDefault(b => b.Name == "Y-Knot"),
-                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m")
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    Itinerary = "Day 1: Sail"
+
                 },
                 new Booking
                 {
@@ -119,7 +121,8 @@ namespace LmycWeb.Models
                     EndDateTime = new DateTime(2018,7,2,6,0,0),
                     CreditsUsed = 60,
                     Boat = db.Boats.FirstOrDefault(b => b.Name == "Y-Knot"),
-                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m")
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    Itinerary = "Day 2: Sail"
                 },
                 new Booking
                 {
@@ -128,7 +131,8 @@ namespace LmycWeb.Models
                     EndDateTime = new DateTime(2018,7,30,18,0,0),
                     CreditsUsed = 102,
                     Boat = db.Boats.FirstOrDefault(b => b.Name == "Y-Knot"),
-                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m")
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    Itinerary = "Day 3: Sail"
 
                 },
                 new Booking
@@ -138,7 +142,8 @@ namespace LmycWeb.Models
                     EndDateTime = new DateTime(2018,7,30,18,0,0),
                     CreditsUsed = 102,
                     Boat = db.Boats.FirstOrDefault(b => b.Name == "White Swan"),
-                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m")
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    Itinerary = "Day 4: Sail"
 
                 },
                 new Booking
@@ -148,10 +153,148 @@ namespace LmycWeb.Models
                     EndDateTime = new DateTime(2018,1,1,13,0,0),
                     CreditsUsed = 18,
                     Boat = db.Boats.FirstOrDefault(b => b.Name == "Y-Knot"),
-                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m")
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    Itinerary = "Day 5: Sail"
                 },
             };
             return bookings;
+        }
+
+        public static List<Member> GetMembers(ApplicationDbContext db)
+        {
+            List<Member> MemberList = new List<Member>
+            {
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0001"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    AllocatedCredits = 18,
+                },
+
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0001"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m2@m.m"),
+                    AllocatedCredits = 18,
+                },
+
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0002"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    AllocatedCredits = 30,
+                },
+
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0002"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m2@m.m"),
+                    AllocatedCredits = 30,
+                },
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0003"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    AllocatedCredits = 51,
+                },
+
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0003"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m2@m.m"),
+                    AllocatedCredits = 51,
+                },
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0004"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    AllocatedCredits = 51,
+                },
+
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0004"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m2@m.m"),
+                    AllocatedCredits = 51,
+                },
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0005"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"),
+                    AllocatedCredits = 9,
+                },
+
+                new Member
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0005"),
+                    User = db.Users.FirstOrDefault(u => u.Email == "m2@m.m"),
+                    AllocatedCredits = 9,
+                }
+            };
+            return MemberList;
+        }
+
+        public static List<NonMember> GetNonMembers(ApplicationDbContext db)
+        {
+            List<NonMember> NonMemberList = new List<NonMember>
+            {
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0001"),
+                    Name = "David Spade"
+                },
+
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0001"),
+                    Name = "Adam Sandler"
+                },
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0002"),
+                    Name = "Kevin James"
+                },
+
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0002"),
+                    Name = "Rob Schneider"
+                },
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0003"),
+                    Name = "Kevin Hart"
+                },
+
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0003"),
+                    Name = "Marcus Naslund"
+                },
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0004"),
+                    Name = "Brendan Morrison"
+                },
+
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0004"),
+                    Name = "Todd Bertuzzi"
+                },
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0005"),
+                    Name = "Dan Cloutier"
+                },
+
+                new NonMember
+                {
+                    Booking = db.Bookings.FirstOrDefault(b => b.BookingId == "C0005"),
+                    Name = "Jarko Ruutu"
+                },
+            };
+            return NonMemberList;
         }
 
         // TO-DO: need to report with real user in ApplicationUser
