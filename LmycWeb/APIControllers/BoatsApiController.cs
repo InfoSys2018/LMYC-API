@@ -10,6 +10,8 @@ using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
+using AspNet.Security.OAuth.Validation;
 
 namespace LmycWeb.APIControllers
 {
@@ -17,6 +19,7 @@ namespace LmycWeb.APIControllers
     [Route("api/Boats")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("AllowAllOrigins")]
+    [Authorize(Policy = "LoginRequired", AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     public class BoatsApiController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -54,6 +57,7 @@ namespace LmycWeb.APIControllers
 
         // PUT: api/BoatsApi/5
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminRequired")]
         public async Task<IActionResult> PutBoat([FromRoute] string id, [FromBody] Boat boat)
         {
             if (!ModelState.IsValid)
@@ -89,6 +93,7 @@ namespace LmycWeb.APIControllers
 
         // POST: api/BoatsApi
         [HttpPost]
+        [Authorize(Policy = "AdminRequired")]
         public async Task<IActionResult> PostBoat([FromBody] Boat boat)
         {
             if (!ModelState.IsValid)
@@ -104,6 +109,7 @@ namespace LmycWeb.APIControllers
 
         // DELETE: api/BoatsApi/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminRequired")]
         public async Task<IActionResult> DeleteBoat([FromRoute] string id)
         {
             if (!ModelState.IsValid)
