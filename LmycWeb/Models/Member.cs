@@ -13,6 +13,8 @@ namespace LmycWeb.Models
         public string BookingId { get; set; }
         public Booking Booking { get; set; }
 
+        public int AllocatedCredits { get; set; }
+
         [Key]
         public string UserId { get; set; }
         [ForeignKey("UserId")]
