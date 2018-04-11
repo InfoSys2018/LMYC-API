@@ -100,6 +100,14 @@ namespace LmycWeb.APIControllers
                 return BadRequest(ModelState);
             }
 
+            bool goodStandingResult = await FullMemberGoodStatusCheckAsync(booking.UserId);
+
+            if (!goodStandingResult)
+            {
+                return BadRequest("The user can't create the booking because they are not in good standing.");
+            }
+
+
             bool result = await CheckMembersHaveEnoughCreditsAsync(booking.Members);
 
             if (!result)
@@ -118,7 +126,8 @@ namespace LmycWeb.APIControllers
                 {
                     return BadRequest("One of the members must have a Skipper Status of Cruise");
                 }
-            } else
+            }
+            else
             {
                 skipperStatusResult = await CheckSkipperStatusForDayAsync(booking.Members);
                 if (!skipperStatusResult)
@@ -126,8 +135,6 @@ namespace LmycWeb.APIControllers
                     return BadRequest("One of the members must have a Skipper Status of Day");
                 }
             }
-
-
 
 
             _context.Bookings.Add(booking);
@@ -168,6 +175,18 @@ namespace LmycWeb.APIControllers
 
 
         //*************************** HELPER FUNCTIONS *********************************
+
+        public async Task<bool> FullMemberGoodStatusCheckAsync(string userId)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == userId);
+
+            if (user.MemberStatus.Equals("full member good standing", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         public async Task<bool> CheckMembersHaveEnoughCreditsAsync(List<Member> members)
         {
@@ -272,12 +291,12 @@ namespace LmycWeb.APIControllers
             foreach (var member in members)
             {
                 var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                if (!user.SkipperStatus.Equals("cruise"))
+                if (user.SkipperStatus.Equals("cruise skipper", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
 
         public async Task<bool> CheckSkipperStatusForDayAsync(List<Member> members)
@@ -285,12 +304,12 @@ namespace LmycWeb.APIControllers
             foreach (var member in members)
             {
                 var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                if (!user.SkipperStatus.Equals("day"))
+                if (user.SkipperStatus.Equals("day skipper", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
 
 
