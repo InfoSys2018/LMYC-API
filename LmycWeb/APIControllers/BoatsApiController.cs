@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/BoatsApi")]
+    [EnableCors("AllowAllOrigins")]
     public class BoatsApiController : Controller
     {
         private readonly ApplicationDbContext _context;
