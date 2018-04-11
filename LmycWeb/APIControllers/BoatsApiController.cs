@@ -7,61 +7,63 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Users")]
-    public class UsersController : Controller
+    [Route("api/BoatsApi")]
+    [EnableCors("AllowAllOrigins")]
+    public class BoatsApiController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public UsersController(ApplicationDbContext context)
+        public BoatsApiController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/BoatsApi
         [HttpGet]
-        public IEnumerable<ApplicationUser> GetUsers()
+        public IEnumerable<Boat> GetBoats()
         {
-            return _context.Users;
+            return _context.Boats;
         }
 
-        // GET: api/Users/5
+        // GET: api/BoatsApi/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser([FromRoute] string id)
+        public async Task<IActionResult> GetBoat([FromRoute] string id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == id);
+            var boat = await _context.Boats.SingleOrDefaultAsync(m => m.BoatId == id);
 
-            if (user == null)
+            if (boat == null)
             {
                 return NotFound();
             }
 
-            return Ok(user);
+            return Ok(boat);
         }
 
-        // PUT: api/Users/5
+        // PUT: api/BoatsApi/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser([FromRoute] string id, [FromBody] ApplicationUser user)
+        public async Task<IActionResult> PutBoat([FromRoute] string id, [FromBody] Boat boat)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != user.Id)
+            if (id != boat.BoatId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(boat).State = EntityState.Modified;
 
             try
             {
@@ -69,7 +71,7 @@ namespace LmycWeb.APIControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!BoatExists(id))
                 {
                     return NotFound();
                 }
@@ -82,45 +84,45 @@ namespace LmycWeb.APIControllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/BoatsApi
         [HttpPost]
-        public async Task<IActionResult> PostUser([FromBody] ApplicationUser user)
+        public async Task<IActionResult> PostBoat([FromBody] Boat boat)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Users.Add(user);
+            _context.Boats.Add(boat);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return CreatedAtAction("GetBoat", new { id = boat.BoatId }, boat);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/BoatsApi/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser([FromRoute] string id)
+        public async Task<IActionResult> DeleteBoat([FromRoute] string id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+            var boat = await _context.Boats.SingleOrDefaultAsync(m => m.BoatId == id);
+            if (boat == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
+            _context.Boats.Remove(boat);
             await _context.SaveChangesAsync();
 
-            return Ok(user);
+            return Ok(boat);
         }
 
-        private bool UserExists(string id)
+        private bool BoatExists(string id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Boats.Any(e => e.BoatId == id);
         }
     }
 }
