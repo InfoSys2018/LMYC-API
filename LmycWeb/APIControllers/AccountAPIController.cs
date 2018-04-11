@@ -16,7 +16,7 @@ namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/AccountAPI")]
-    [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "LoginRequired", AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("AllowAllOrigins")]
     public class AccountAPIController : Controller
     {
