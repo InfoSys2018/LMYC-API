@@ -7,11 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using AspNet.Security.OAuth.Validation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/Reports")]
+    [Authorize(Policy = "LoginRequired", AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+    [EnableCors("AllowAllOrigins")]
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;

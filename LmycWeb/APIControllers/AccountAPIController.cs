@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.Validation;
 using LmycWeb.Models;
 using LmycWeb.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,7 @@ namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/AccountAPI")]
+    [Authorize(Policy = "LoginRequired", AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("AllowAllOrigins")]
     public class AccountAPIController : Controller
     {
