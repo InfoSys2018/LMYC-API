@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using System.Dynamic;
 
 namespace LmycWeb.APIControllers
 {
@@ -23,9 +24,26 @@ namespace LmycWeb.APIControllers
 
         // GET: api/Reports
         [HttpGet]
-        public IEnumerable<Report> GetReport()
+        public IEnumerable<Object> GetReport()
         {
-            return _context.Reports;
+            List<Object> report = new List<Object>();
+            foreach (Report r in _context.Report)
+            {
+                dynamic v = new ExpandoObject();
+                //Get the username and classification details instead of IDs.
+                v.User = _context.Users.Find(r.UserId).UserName;
+                v.Classification = _context.ClassificationCodes.Find(r.CodeId).Classification;
+                //v.classification = r.Code.Classification;
+
+                v.CodeId = r.CodeId;
+                v.Content = r.Content;
+                v.Approved = r.Approved;
+                v.Hours = r.Hours;
+                v.DateCreated = r.DateCreated;
+
+                report.Add(v);
+            }
+            return report;
         }
 
         // GET: api/Reports/5
@@ -44,7 +62,17 @@ namespace LmycWeb.APIControllers
                 return NotFound();
             }
 
-            return Ok(report);
+            dynamic v = new ExpandoObject();
+            //Get the username and classification details instead of IDs.
+            v.User = _context.Users.Find(report.Id).UserName;
+            v.Classification = _context.ClassificationCodes.Find(report.CodeId).Classification;
+            v.CodeId = report.CodeId;
+            v.Content = report.Content;
+            v.Approved = report.Approved;
+            v.Hours = report.Hours;
+            v.DateCreatd = report.DateCreated;
+
+            return Ok(v);
         }
 
         // PUT: api/Reports/5
@@ -86,6 +114,8 @@ namespace LmycWeb.APIControllers
         [HttpPost]
         public async Task<IActionResult> PostReport([FromBody] Report report)
         {
+            report.Id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
