@@ -15,7 +15,7 @@ namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/Reports")]
-    [Authorize(Policy = "LoginRequired", AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("AllowAllOrigins")]
     public class ReportsController : Controller
     {
