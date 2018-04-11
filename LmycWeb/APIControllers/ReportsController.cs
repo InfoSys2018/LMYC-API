@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
 using System.Dynamic;
+using System.Security.Claims;
 
 namespace LmycWeb.APIControllers
 {
@@ -31,7 +32,7 @@ namespace LmycWeb.APIControllers
             {
                 dynamic v = new ExpandoObject();
                 //Get the username and classification details instead of IDs.
-                v.User = _context.Users.Find(r.UserId).UserName;
+                v.UserName = _context.Users.Find(r.UserId).UserName;
                 v.Classification = _context.ClassificationCodes.Find(r.CodeId).Classification;
                 //v.classification = r.Code.Classification;
 
@@ -64,7 +65,7 @@ namespace LmycWeb.APIControllers
 
             dynamic v = new ExpandoObject();
             //Get the username and classification details instead of IDs.
-            v.User = _context.Users.Find(report.Id).UserName;
+            v.UserName = _context.Users.Find(report.UserId).UserName;
             v.Classification = _context.ClassificationCodes.Find(report.CodeId).Classification;
             v.CodeId = report.CodeId;
             v.Content = report.Content;
@@ -114,7 +115,7 @@ namespace LmycWeb.APIControllers
         [HttpPost]
         public async Task<IActionResult> PostReport([FromBody] Report report)
         {
-            report.Id = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            report.UserId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             if (!ModelState.IsValid)
             {
