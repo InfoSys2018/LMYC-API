@@ -24,7 +24,7 @@ namespace LmycWeb.Models
         public string SailingQualifications { get; set; }
         public string Skills { get; set; }
         public string SailingExperience { get; set; }
-        public int Credits { get; set; } = 320;
+        public int Credits { get; set; }
 
         public string EmergencyContactId { get; set; }
         public EmergencyContact EmergencyContacts { get; set; }
