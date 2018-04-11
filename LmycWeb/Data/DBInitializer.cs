@@ -142,9 +142,8 @@ namespace LmycWeb.Data
 
             if (!context.Reports.Any())
             {
-                //TO-DO: Fix repots in dummy data first
-                //context.Reports.AddRange(DummyData.GetReports());
-                //await context.SaveChangesAsync();
+                context.Reports.AddRange(DummyData.GetReports(context));
+                await context.SaveChangesAsync();
             }
 
             context.SaveChanges();

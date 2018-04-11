@@ -155,73 +155,63 @@ namespace LmycWeb.Models
         }
 
         // TO-DO: need to report with real user in ApplicationUser
-        public static List<Report> GetReports()
+        public static List<Report> GetReports(ApplicationDbContext db)
         {
-            //User ReportUser1 = new User
-            //{
-            //    UserName = "ReportUser1",
-            //    Id = "ReportUserID"
-            //};
+            ApplicationUser ReportUser1 = db.Users.FirstOrDefault(u => u.Email == "m1@m.m"); 
 
-            //User ReportUser2 = new User
-            //{
-            //    UserName = "ReportUser2",
-            //    Id = "ReportUser2ID"
-            //};
+            ApplicationUser ReportUser2 = db.Users.FirstOrDefault(u => u.Email == "m2@m.m");
 
-            //User ReportUser3 = new User
-            //{
-            //    UserName = "ReportUser2",
-            //    Id = "ReportUser2ID"
-            //};
-            //ClassificationCode Class1 = new ClassificationCode
-            //{
-            //    Classification = "Class1",
-            //    CodeId = "1"
-            //};
-            //ClassificationCode Class2 = new ClassificationCode
-            //{
-            //    Classification = "Class2",
-            //    CodeId = "2"
-            //};
+            ApplicationUser ReportUser3 = db.Users.FirstOrDefault(u => u.Email == "a1@a.a");
+
+            ClassificationCode Class1 = new ClassificationCode
+            {
+                Classification = "Class1",
+                CodeId = "1"
+            };
+
+            ClassificationCode Class2 = new ClassificationCode
+            {
+                Classification = "Class2",
+                CodeId = "2"
+            };
 
 
-            //List<Report> Reports = new List<Report>
-            //{
-            //    new Report
-            //    {
-            //        Content = "Test Report 1",
-            //        Hours = 3,
-            //        Approved = true,
-            //        DateCreated = DateTime.Now,
-            //        User = ReportUser1,
-            //        UserId = ReportUser1.Id,
-            //        Code = Class1,
-            //        CodeId = Class1.CodeId,
-            //    },
-            //    new Report
-            //    {
-            //        Content = "Test Report 2",
-            //        Hours = 5,
-            //        Approved = true,
-            //        DateCreated = DateTime.Now,
-            //        User = ReportUser1,
-            //        UserId = ReportUser1.Id,
-            //        Code = Class1,
-            //        CodeId = Class1.CodeId
-            //    },
-            //    new Report
-            //    {
-            //        Content = "Test Report 3",
-            //        Hours = 5,
-            //        Approved = true,
-            //        DateCreated = DateTime.Now,
-            //        User = ReportUser2,
-            //        UserId = ReportUser2.Id,
-            //        Code = Class2,
-            //        CodeId = Class2.CodeId,
-            //    }
-            //};
+            List<Report> Reports = new List<Report>
+            {
+                new Report
+                {
+                    Content = "Test Report 1",
+                    Hours = 3,
+                    Approved = true,
+                    DateCreated = DateTime.Now,
+                    User = ReportUser1,
+                    UserId = ReportUser1.Id,
+                    Code = Class1,
+                    CodeId = Class1.CodeId,
+                },
+                new Report
+                {
+                    Content = "Test Report 2",
+                    Hours = 5,
+                    Approved = true,
+                    DateCreated = DateTime.Now,
+                    User = ReportUser1,
+                    UserId = ReportUser1.Id,
+                    Code = Class1,
+                    CodeId = Class1.CodeId
+                },
+                new Report
+                {
+                    Content = "Test Report 3",
+                    Hours = 5,
+                    Approved = true,
+                    DateCreated = DateTime.Now,
+                    User = ReportUser2,
+                    UserId = ReportUser2.Id,
+                    Code = Class2,
+                    CodeId = Class2.CodeId,
+                }
+            };
             return null;
         }
     }
