@@ -14,7 +14,6 @@ namespace LmycWeb.Controllers
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager; 
         public ReportsController(ApplicationDbContext context)
         {
             _context = context;
