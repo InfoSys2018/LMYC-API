@@ -13,7 +13,7 @@ using AspNet.Security.OAuth.Validation;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/ClassificationCodes")]
+    [Route("api/classificationcodes")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     public class ClassificationCodesApiController : Controller
     {

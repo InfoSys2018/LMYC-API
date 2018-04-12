@@ -14,7 +14,7 @@ using AspNet.Security.OAuth.Validation;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Bookings")]
+    [Route("api/bookings")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("AllowAllOrigins")]
     public class BookingsController : Controller
