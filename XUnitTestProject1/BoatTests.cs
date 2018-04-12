@@ -6,6 +6,7 @@ using System.Linq;
 using Xunit;
 using LmycWeb.APIControllers;
 using LmycWeb.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace XUnitTestProject1
 {
@@ -23,6 +24,42 @@ namespace XUnitTestProject1
 
             Assert.Equal(7, resultList.Count);
         }
+
+        //[Theory]
+        //[InlineData("B01")]
+        //public void GetBoatsWithBoatId(string boatId)
+        //{
+        //    //var boat = new Boat();
+
+        //    var dbContext = new Mock<IDbContext>();
+        //    var mockList = MockDbSet(testBoats);
+        //    dbContext.Setup(c => c.Boats).Returns(mockList.Object);
+
+        //    var controller = new BoatsApiController(dbContext.Object);
+        //    var result = controller.GetBoat(boatId).GetType();
+        //    var expected = typeof(Boat);
+        //    Assert.NotNull(result);
+        //    //Assert.IsType<Boat>(result);
+        //    //Assert.IsType<List<Boat>>(result);
+        //    Assert.IsType(expected, result);
+
+        //}
+
+        //[Fact]
+        //public void BoatNotFoundTest()
+        //{
+        //    string boatId = "invalidId";
+
+        //    var dbContext = new Mock<IDbContext>();
+        //    var mockList = MockDbSet(testBoats);
+        //    dbContext.Setup(c => c.Boats).Returns(mockList.Object);
+
+        //    var controller = new BoatsApiController(dbContext.Object);
+        //    var result = controller.GetBoat(boatId);
+
+        //    Assert.IsType<NotFoundResult>(result.Result);
+        //}
+
 
         /* Helper methods and sample data */
 
