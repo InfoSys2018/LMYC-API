@@ -11,6 +11,7 @@ namespace LmycWeb.Models
         [Key]
         public string BoatId { get; set; }
         public string Name { get; set; }
+        [Display(Name="Credits Per Hour")]
         public int CreditsPerHour { get; set; }
         public string Status { get; set; }
         public byte[] Photo { get; set; }
