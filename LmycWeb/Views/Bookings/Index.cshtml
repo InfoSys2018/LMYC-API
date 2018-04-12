@@ -1,0 +1,65 @@
+﻿@model IEnumerable<LmycWeb.Models.Booking>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.StartDateTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EndDateTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreditsUsed)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Itinerary)
+                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Boat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreditsUsed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Itinerary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Boat.BoatId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.BookingId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.BookingId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
