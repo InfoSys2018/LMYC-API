@@ -66,16 +66,24 @@ namespace LmycWeb.APIControllers
                 return BadRequest();
             }
 
-            bool result = await CheckMembersHaveEnoughCreditsForEditAsync(booking.Members, id);
-
-            if (!result)
+            //Check if the members have enough for the newly allocated credits
+            if (booking.CreditsUsed != 0)
             {
-                return BadRequest("A member does not have enough credits.");
+                bool result = await CheckMembersHaveEnoughCreditsForEditAsync(booking.Members, id);
+
+                if (!result)
+                {
+                    return BadRequest("A member does not have enough credits.");
+                }
             }
 
             _context.Entry(booking).State = EntityState.Modified;
 
-            await RefundAndChargeNewAllocationAsync(booking.Members, id);
+            //Charge the credits to each user if there is any credits to be charged
+            if (booking.CreditsUsed != 0)
+            {
+                await RefundAndChargeNewAllocationAsync(booking.Members, id);
+            }
 
             try
             {
@@ -105,6 +113,7 @@ namespace LmycWeb.APIControllers
                 return BadRequest(ModelState);
             }
 
+            //Check the member status of the user creating the booking
             bool goodStandingResult = await FullMemberGoodStatusCheckAsync(booking.UserId);
 
             if (!goodStandingResult)
@@ -112,12 +121,15 @@ namespace LmycWeb.APIControllers
                 return BadRequest("The user can't create the booking because they are not in good standing.");
             }
 
-
-            bool result = await CheckMembersHaveEnoughCreditsAsync(booking.Members);
-
-            if (!result)
+            //Check if the booking requires credits
+            if (booking.CreditsUsed != 0)
             {
-                return BadRequest("A member does not have enough credits");
+                bool result = await CheckMembersHaveEnoughCreditsAsync(booking.Members);
+
+                if (!result)
+                {
+                    return BadRequest("A member does not have enough credits");
+                }
             }
 
             int totalDays = (booking.EndDateTime - booking.StartDateTime).Days;
@@ -145,7 +157,11 @@ namespace LmycWeb.APIControllers
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
-            ChargeBookingMemberCredits(booking.Members);
+            //Charge the credits to each user if there are any credits to charge
+            if (booking.CreditsUsed != 0)
+            {
+                ChargeBookingMemberCredits(booking.Members);
+            }
 
             return CreatedAtAction("GetBooking", new { id = booking.BookingId }, booking);
         }
