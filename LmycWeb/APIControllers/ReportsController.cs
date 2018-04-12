@@ -16,7 +16,7 @@ namespace LmycWeb.APIControllers
     [Produces("application/json")]
     [Route("api/Reports")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;

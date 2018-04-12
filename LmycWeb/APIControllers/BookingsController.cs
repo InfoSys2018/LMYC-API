@@ -16,7 +16,7 @@ namespace LmycWeb.APIControllers
     [Produces("application/json")]
     [Route("api/Bookings")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class BookingsController : Controller
     {
         private readonly ApplicationDbContext _context;

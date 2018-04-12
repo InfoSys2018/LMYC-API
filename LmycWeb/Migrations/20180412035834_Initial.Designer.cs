@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
-namespace LmycWeb.Data.Migrations
+namespace LmycWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180411100601_FirstMigrations")]
-    partial class FirstMigrations
+    [Migration("20180412035834_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -215,6 +215,8 @@ namespace LmycWeb.Data.Migrations
                     b.Property<string>("UserId");
 
                     b.Property<string>("BookingId");
+
+                    b.Property<int>("AllocatedCredits");
 
                     b.HasKey("UserId", "BookingId");
 
