@@ -301,6 +301,44 @@ namespace LmycWeb.Models
             return NonMemberList;
         }
 
+        public static List<ClassificationCode> GetClassificationCodes(ApplicationDbContext db)
+        {
+            List<ClassificationCode> ClassificationCodeList = new List<ClassificationCode>
+            {
+                new ClassificationCode
+                {
+                    Classification = "Boat Maint - Hard"
+                },
+
+                new ClassificationCode
+                {
+                    Classification = "Boat Maint - Monthly"
+                },
+
+                new ClassificationCode
+                {
+                    Classification = "Training - Cruise Skipper"
+                },
+
+                new ClassificationCode
+                {
+                    Classification = "Training - Day Skipper"
+                },
+
+                new ClassificationCode
+                {
+                    Classification = "Executive"
+                },
+
+                new ClassificationCode
+                {
+                    Classification = "Winter Watch"
+                }
+            };
+
+            return ClassificationCodeList;
+        }
+
         // TO-DO: need to report with real user in ApplicationUser
         public static List<Report> GetReports(ApplicationDbContext db)
         {
@@ -310,18 +348,11 @@ namespace LmycWeb.Models
 
             ApplicationUser ReportUser3 = db.Users.FirstOrDefault(u => u.Email == "a1@a.a");
 
-            ClassificationCode Class1 = new ClassificationCode
-            {
-                Classification = "Class1",
-                CodeId = "1"
-            };
+            ClassificationCode ClassCode1 = db.ClassificationCodes.FirstOrDefault(c => c.Classification == "Winter Watch");
 
-            ClassificationCode Class2 = new ClassificationCode
-            {
-                Classification = "Class2",
-                CodeId = "2"
-            };
+            ClassificationCode ClassCode2 = db.ClassificationCodes.FirstOrDefault(c => c.Classification == "Executive");
 
+            ClassificationCode ClassCode3 = db.ClassificationCodes.FirstOrDefault(c => c.Classification == "Training - Cruise Skipper");
 
             List<Report> Reports = new List<Report>
             {
@@ -333,8 +364,8 @@ namespace LmycWeb.Models
                     DateCreated = DateTime.Now,
                     User = ReportUser1,
                     UserId = ReportUser1.Id,
-                    Code = Class1,
-                    CodeId = Class1.CodeId,
+                    Code = ClassCode1,
+                    CodeId = ClassCode1.CodeId,
                 },
                 new Report
                 {
@@ -344,8 +375,8 @@ namespace LmycWeb.Models
                     DateCreated = DateTime.Now,
                     User = ReportUser1,
                     UserId = ReportUser1.Id,
-                    Code = Class1,
-                    CodeId = Class1.CodeId
+                    Code = ClassCode2,
+                    CodeId = ClassCode2.CodeId
                 },
                 new Report
                 {
@@ -355,8 +386,8 @@ namespace LmycWeb.Models
                     DateCreated = DateTime.Now,
                     User = ReportUser2,
                     UserId = ReportUser2.Id,
-                    Code = Class2,
-                    CodeId = Class2.CodeId,
+                    Code = ClassCode3,
+                    CodeId = ClassCode3.CodeId,
                 }
             };
             return Reports;

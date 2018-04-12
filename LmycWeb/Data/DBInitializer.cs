@@ -154,6 +154,12 @@ namespace LmycWeb.Data
                 context.SaveChanges();
             }
 
+            if (!context.ClassificationCodes.Any())
+            {
+                context.ClassificationCodes.AddRange(DummyData.GetClassificationCodes(context));
+                await context.SaveChangesAsync();
+            }
+
             if (!context.Reports.Any())
             {
                 context.Reports.AddRange(DummyData.GetReports(context));
