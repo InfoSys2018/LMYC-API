@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LmycWeb", "LmycWeb\LmycWeb.csproj", "{A23866F7-E4A5-42E5-BE17-5B7A1A31EE56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LmycWeb", "LmycWeb\LmycWeb.csproj", "{A23866F7-E4A5-42E5-BE17-5B7A1A31EE56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTestProject1", "XUnitTestProject1\XUnitTestProject1.csproj", "{49497FA0-E1C3-482B-ACEE-B15161A945AE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A23866F7-E4A5-42E5-BE17-5B7A1A31EE56} = {A23866F7-E4A5-42E5-BE17-5B7A1A31EE56}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{A23866F7-E4A5-42E5-BE17-5B7A1A31EE56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A23866F7-E4A5-42E5-BE17-5B7A1A31EE56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A23866F7-E4A5-42E5-BE17-5B7A1A31EE56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49497FA0-E1C3-482B-ACEE-B15161A945AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49497FA0-E1C3-482B-ACEE-B15161A945AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49497FA0-E1C3-482B-ACEE-B15161A945AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49497FA0-E1C3-482B-ACEE-B15161A945AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

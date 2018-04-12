@@ -10,6 +10,7 @@ using LmycWeb.Models;
 using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using LmycWeb.Interfaces;
 
 namespace LmycWeb.APIControllers
 {
@@ -19,9 +20,9 @@ namespace LmycWeb.APIControllers
     [EnableCors("CorsPolicy")]
     public class ReportsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContext _context;
 
-        public ReportsController(ApplicationDbContext context)
+        public ReportsController(IDbContext context)
         {
             _context = context;
         }

@@ -10,6 +10,7 @@ using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using LmycWeb.Interfaces;
 
 namespace LmycWeb.APIControllers
 {
@@ -19,9 +20,9 @@ namespace LmycWeb.APIControllers
     [EnableCors("AllowAllOrigins")]
     public class BoatsApiController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContext _context;
 
-        public BoatsApiController(ApplicationDbContext context)
+        public BoatsApiController(IDbContext context)
         {
             _context = context;
         }

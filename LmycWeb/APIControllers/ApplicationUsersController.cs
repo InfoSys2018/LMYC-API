@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
 using Microsoft.AspNetCore.Cors;
+using LmycWeb.Interfaces;
 
 namespace LmycWeb.APIControllers
 {
@@ -16,9 +17,9 @@ namespace LmycWeb.APIControllers
     [EnableCors("AllowAllOrigins")]
     public class ApplicationUsersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContext _context;
 
-        public ApplicationUsersController(ApplicationDbContext context)
+        public ApplicationUsersController(IDbContext context)
         {
             _context = context;
         }

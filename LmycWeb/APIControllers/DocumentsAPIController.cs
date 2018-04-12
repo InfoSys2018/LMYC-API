@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using LmycWeb.Interfaces;
 
 namespace LmycWeb.APIControllers
 {
@@ -23,10 +24,10 @@ namespace LmycWeb.APIControllers
     [EnableCors("AllowAllOrigins")]
     public class DocumentsAPIController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContext _context;
         private readonly IServiceProvider _services;
 
-        public DocumentsAPIController(ApplicationDbContext context, IServiceProvider services)
+        public DocumentsAPIController(IDbContext context, IServiceProvider services)
         {
             _context = context;
             _services = services;
@@ -114,7 +115,7 @@ namespace LmycWeb.APIControllers
                 document.Content = memoryStream.ToArray();
             }
 
-            _context.Add(document);
+            _context.Documents.Add(document);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDocument", new { id = document.DocumentId }, document);

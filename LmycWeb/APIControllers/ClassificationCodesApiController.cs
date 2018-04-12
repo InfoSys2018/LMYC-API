@@ -9,6 +9,7 @@ using LmycWeb.Data;
 using LmycWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using AspNet.Security.OAuth.Validation;
+using LmycWeb.Interfaces;
 
 namespace LmycWeb.APIControllers
 {
@@ -17,9 +18,9 @@ namespace LmycWeb.APIControllers
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     public class ClassificationCodesApiController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContext _context;
 
-        public ClassificationCodesApiController(ApplicationDbContext context)
+        public ClassificationCodesApiController(IDbContext context)
         {
             _context = context;
         }
