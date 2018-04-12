@@ -39,5 +39,6 @@ namespace LmycWeb.Models
         public string EmergencyContactId { get; set; }
         public EmergencyContact EmergencyContacts { get; set; }
         public List<Booking> Bookings { get; set; }
+        public List<Report> Reports { get; set; }
     }
 }

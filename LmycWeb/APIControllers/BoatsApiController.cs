@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Cors;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Boats")]
+    [Route("api/boats")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("CorsPolicy")]
     public class BoatsApiController : Controller

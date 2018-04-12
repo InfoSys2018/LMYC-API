@@ -18,7 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Documents")]
+    [Route("api/documents")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("AllowAllOrigins")]
     public class DocumentsAPIController : Controller

@@ -41,6 +41,7 @@ namespace LmycWeb.Controllers
             var applicationUser = await _context.ApplicationUser
                 .Include(a => a.EmergencyContacts)
                 .SingleOrDefaultAsync(m => m.Id == id);
+
             if (applicationUser == null)
             {
                 return NotFound();
