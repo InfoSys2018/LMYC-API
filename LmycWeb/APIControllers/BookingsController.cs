@@ -7,11 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
+using AspNet.Security.OAuth.Validation;
 
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/Bookings")]
+    [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+    [EnableCors("AllowAllOrigins")]
     public class BookingsController : Controller
     {
         private readonly ApplicationDbContext _context;

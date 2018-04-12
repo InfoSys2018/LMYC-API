@@ -133,11 +133,25 @@ namespace LmycWeb.Data
             if (!context.Boats.Any())
             {
                 context.Boats.AddRange(DummyData.GetBoats());
+                context.SaveChanges();
             }
 
             if (!context.Bookings.Any())
             {
                 context.Bookings.AddRange(DummyData.GetBookings(context));
+                context.SaveChanges();
+            }
+
+            if (!context.Members.Any())
+            {
+                context.Members.AddRange(DummyData.GetMembers(context));
+                context.SaveChanges();
+            }
+
+            if (!context.NonMembers.Any())
+            {
+                context.NonMembers.AddRange(DummyData.GetNonMembers(context));
+                context.SaveChanges();
             }
 
             if (!context.Reports.Any())

@@ -17,6 +17,7 @@ using LmycWeb.Models;
 using LmycWeb.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Core;
@@ -24,6 +25,7 @@ using OpenIddict.Models;
 
 namespace LmycWeb.Controllers
 {
+    [EnableCors("CorsPolicy")]
     public class AuthorizationController : Controller
     {
         private readonly OpenIddictApplicationManager<OpenIddictApplication> _applicationManager;
