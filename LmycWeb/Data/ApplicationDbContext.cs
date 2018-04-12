@@ -33,5 +33,6 @@ namespace LmycWeb.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<NonMember> NonMembers { get; set; }
+        public DbSet<LmycWeb.Models.ApplicationUser> ApplicationUser { get; set; }
     }
 }
