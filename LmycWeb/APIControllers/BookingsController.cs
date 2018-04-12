@@ -15,8 +15,8 @@ namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/Bookings")]
-    [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    //[Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+    [EnableCors("CorsPolicy")]
     public class BookingsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -50,6 +50,63 @@ namespace LmycWeb.APIControllers
             }
 
             return Ok(booking);
+        }
+
+        // GET: api/Bookings/[BoatId]/[SelectedDate]
+        [HttpGet("{boatId}/{selectedDate}")]
+        public async Task<IActionResult> GetAvailableTimes([FromRoute] string boatId, [FromRoute] DateTime selectedDate)
+        {
+
+            var boat = await _context.Boats.SingleOrDefaultAsync(b => b.BoatId == boatId);
+
+            if (boat == null)
+            {
+                return BadRequest("Boat does not exist given ID!");
+            }
+
+            DateTime endTime = selectedDate;
+            endTime = endTime.AddHours(23);
+            endTime = endTime.AddMinutes(59);
+            endTime = endTime.AddSeconds(59);
+            endTime = endTime.AddMilliseconds(999);
+
+            List<DateTime> startList = await _context.Bookings.Where(d => d.StartDateTime >= selectedDate && d.StartDateTime <= endTime)
+                .Select(s => s.StartDateTime).ToListAsync();
+
+            List<DateTime> endList = await _context.Bookings.Where(d => d.EndDateTime >= selectedDate && d.EndDateTime <= endTime)
+                .Select(s => s.EndDateTime).ToListAsync();
+
+            List<DateTime> availableTimeList = CreateSemiHourlyList(selectedDate);
+
+            for (int i = 0, j = 1; i < startList.Count(); i++, j++)
+            {
+                if (availableTimeList.IndexOf(startList[i]) != -1 )
+                {
+                    availableTimeList.Remove(startList[i]);
+                }
+
+                TimeSpan betweenDiff = endList[i].Subtract(startList[i]);
+                int amountOfHalfHours = (int) betweenDiff.TotalHours * 2 - 1;
+                DateTime halfHourTime = startList[i];
+
+                for (int x = 0; x < amountOfHalfHours; x++)
+                {
+                    halfHourTime = halfHourTime.AddMinutes(30);
+                    availableTimeList.Remove(halfHourTime);
+                }
+
+                if (j < startList.Count())
+                {
+                    TimeSpan diff = startList[j].Subtract(endList[i]);
+                    if (diff.TotalHours < 1)
+                    {
+                        availableTimeList.Remove(endList[i]);
+                    }
+                }
+
+            }
+
+            return Ok(availableTimeList);
         }
 
         // PUT: api/Bookings/5
@@ -333,7 +390,19 @@ namespace LmycWeb.APIControllers
             return false;
         }
 
+        private List<DateTime> CreateSemiHourlyList(DateTime selectedTime)
+        {
+            List<DateTime> list = new List<DateTime>();
+            list.Add(selectedTime);
 
+            for (int i = 0; i < 47; i++)
+            {
+                selectedTime = selectedTime.AddMinutes(30);
+                list.Add(selectedTime);
+            }
+
+            return list;
+        }
 
 
 
