@@ -10,8 +10,6 @@ using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Authorization;
-using AspNet.Security.OAuth.Validation;
 
 namespace LmycWeb.APIControllers
 {

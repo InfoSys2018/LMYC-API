@@ -1,8 +1,10 @@
 ﻿using LmycWeb.Data;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace LmycWeb.Models
 {
@@ -10,6 +12,8 @@ namespace LmycWeb.Models
     {
         public static List<Boat> GetBoats()
         {
+            string path = Directory.GetCurrentDirectory();
+
             return new List<Boat>
                 {
                     new Boat
@@ -18,7 +22,7 @@ namespace LmycWeb.Models
                         Name = "Sharquis",
                         CreditsPerHour = 6,
                         Status = "Out-of Service",
-                        Photo = null,
+                        Photo = File.ReadAllBytes(path + "\\images\\sharquis.jpg"),
                         Description = "Sharqui was added to the fleet in 2016.  Another of the very popular C&C designs for style, comfort, and speed. Sharqui sleeps five comfortably, has an aftermarket outboard motor, and sports a very generous dodger for protection on heavy weather days.",
                         Length = 27,
                         Make = "C&C",
@@ -30,7 +34,7 @@ namespace LmycWeb.Models
                         Name = "Pegasus",
                         CreditsPerHour = 6,
                         Status = "Out-of Service",
-                        Photo = null,
+                        Photo = File.ReadAllBytes(path + "\\images\\pegasus.jpg"),
                         Description = "Pegasus will be oufitted for travelling to Desolation Sound for the first time this summer. Members are looking forward to a roomier more comfortable boat with generous side decks.",
                         Length = 27,
                         Make = "C&C",
@@ -42,7 +46,7 @@ namespace LmycWeb.Models
                         Name = "Lightcure",
                         CreditsPerHour = 6,
                         Status = "Out-of Service",
-                        Photo = null,
+                        Photo = File.ReadAllBytes(path + "\\images\\lightcure.jpg"),
                         Description = "She is one of our most popular boats, being a good sailor and comfortable while cruising.\nShe sleeps 5 adults comfortably. She was refitted in 2005 and is powered by a remote controlled Yamaha outboard.\nLightcure has a BBQ, cockpit table, asymmetrical spinnaker and all the extras to be comfortable for cruising.She is also rigged for use in local sailboat races.",
                         Length = 27,
                         Make = "C&C Mark 3",
@@ -54,7 +58,7 @@ namespace LmycWeb.Models
                         Name = "Frankie",
                         CreditsPerHour = 6,
                         Status = "Out-of Service",
-                        Photo = null,
+                        Photo = File.ReadAllBytes(path + "\\images\\frankie.jpg"),
                         Description = "She is designated as a “day sailor”, and is available for use in Semiahmoo Bay.\nShe is outfitted with some of the amenities for cruising and may be used occasionally for overnight trips.\nShe might sleep 4 adults comfortably.Frankie has a spray dodger and is powered by a Yamaha outboard.",
                         Length = 25,
                         Make = "Cal Mark 2",
@@ -66,7 +70,7 @@ namespace LmycWeb.Models
                         Name = "White Swan",
                         CreditsPerHour = 6,
                         Status = "Out-of Service",
-                        Photo = null,
+                        Photo = File.ReadAllBytes(path + "\\images\\whiteswan.jpg"),
                         Description = "She is a cruising boat, with a spray dodger, inboard diesel engine and enclosed head.\nWhite Swan is popular for longer trips to the local islands.She sleeps 4 adults very comfortably with a private aft cabin and V-berth.",
                         Length = 28,
                         Make = "C&C Mark 2",
@@ -78,7 +82,7 @@ namespace LmycWeb.Models
                         Name = "Peak Time",
                         CreditsPerHour = 6,
                         Status = "Out-of Service",
-                        Photo = null,
+                        Photo = File.ReadAllBytes(path + "\\images\\peaktime.jpg"),
                         Description = "She has a spray dodger, BBQ and a comfortable cockpit.\nShe has all the amenities and can be used as a cruiser or day sailing boat.\nShe can sleep 4 adults. Peak Time is powered by a Yamaha outboard engine.\nShe is also rigged for use in local sailboat races.",
                         Length = 27,
                         Make = "C&C Mark 5",
@@ -90,7 +94,7 @@ namespace LmycWeb.Models
                         Name = "Y-Knot",
                         CreditsPerHour = 6,
                         Status = "Out-of Service",
-                        Photo = null,
+                        Photo = File.ReadAllBytes(path + "\\images\\yknot.jpg"),
                         Description = "A spacious fast cruiser.\nShe has a comfortable cockpit, spray dodger.\nShe has all the amenities of a cruiser.\nLarge aft head/shower.\nShe can sleep up to 6 adults in comfort.\nPowered by Yanmar diesel.\nStable wing keel design.\nOpen transom with swim grid,BBQ for sailing adventures.",
                         Length = 30,
                         Make = "Cruiser",

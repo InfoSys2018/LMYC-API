@@ -2,30 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LmycWeb.Data;
-using LmycWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using LmycWeb.Data;
+using LmycWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LmycWeb.Controllers
 {
-    public class ReportsController : Controller
+    [Authorize(Roles = "Admin")]
+    public class BoatsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public ReportsController(ApplicationDbContext context)
+
+        public BoatsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Reports
+        // GET: Boats
         public async Task<IActionResult> Index()
         {
-            var ApplicationDbContext = _context.Reports.Include(r => r.Code);
-            return View(await ApplicationDbContext.ToListAsync());
+            return View(await _context.Boats.ToListAsync());
         }
 
-        // GET: Reports/Details/5
+        // GET: Boats/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -33,42 +35,39 @@ namespace LmycWeb.Controllers
                 return NotFound();
             }
 
-            var report = await _context.Reports
-                .Include(r => r.Code)
-                .SingleOrDefaultAsync(m => m.ReportID == id);
-            if (report == null)
+            var boat = await _context.Boats
+                .SingleOrDefaultAsync(m => m.BoatId == id);
+            if (boat == null)
             {
                 return NotFound();
             }
 
-            return View(report);
+            return View(boat);
         }
 
-        // GET: Reports/Create
+        // GET: Boats/Create
         public IActionResult Create()
         {
-            ViewData["CodeId"] = new SelectList(_context.Set<ClassificationCode>(), "CodeId", "CodeId");
             return View();
         }
 
-        // POST: Reports/Create
+        // POST: Boats/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReportID,Content,Hours,Approved,DateCreated,Id,CodeId")] Report report)
+        public async Task<IActionResult> Create([Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] Boat boat)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(report);
+                _context.Add(boat);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CodeId"] = new SelectList(_context.Set<ClassificationCode>(), "CodeId", "CodeId", report.CodeId);
-            return View(report);
+            return View(boat);
         }
 
-        // GET: Reports/Edit/5
+        // GET: Boats/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -76,23 +75,22 @@ namespace LmycWeb.Controllers
                 return NotFound();
             }
 
-            var report = await _context.Reports.SingleOrDefaultAsync(m => m.ReportID == id);
-            if (report == null)
+            var boat = await _context.Boats.SingleOrDefaultAsync(m => m.BoatId == id);
+            if (boat == null)
             {
                 return NotFound();
             }
-            ViewData["CodeId"] = new SelectList(_context.Set<ClassificationCode>(), "CodeId", "CodeId", report.CodeId);
-            return View(report);
+            return View(boat);
         }
 
-        // POST: Reports/Edit/5
+        // POST: Boats/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ReportID,Content,Hours,Approved,DateCreated,Id,CodeId")] Report report)
+        public async Task<IActionResult> Edit(string id, [Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] Boat boat)
         {
-            if (id != report.ReportID)
+            if (id != boat.BoatId)
             {
                 return NotFound();
             }
@@ -101,12 +99,12 @@ namespace LmycWeb.Controllers
             {
                 try
                 {
-                    _context.Update(report);
+                    _context.Update(boat);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReportExists(report.ReportID))
+                    if (!BoatExists(boat.BoatId))
                     {
                         return NotFound();
                     }
@@ -117,11 +115,10 @@ namespace LmycWeb.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CodeId"] = new SelectList(_context.Set<ClassificationCode>(), "CodeId", "CodeId", report.CodeId);
-            return View(report);
+            return View(boat);
         }
 
-        // GET: Reports/Delete/5
+        // GET: Boats/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -129,31 +126,30 @@ namespace LmycWeb.Controllers
                 return NotFound();
             }
 
-            var report = await _context.Reports
-                .Include(r => r.Code)
-                .SingleOrDefaultAsync(m => m.ReportID == id);
-            if (report == null)
+            var boat = await _context.Boats
+                .SingleOrDefaultAsync(m => m.BoatId == id);
+            if (boat == null)
             {
                 return NotFound();
             }
 
-            return View(report);
+            return View(boat);
         }
 
-        // POST: Reports/Delete/5
+        // POST: Boats/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var report = await _context.Reports.SingleOrDefaultAsync(m => m.ReportID == id);
-            _context.Reports.Remove(report);
+            var boat = await _context.Boats.SingleOrDefaultAsync(m => m.BoatId == id);
+            _context.Boats.Remove(boat);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ReportExists(string id)
+        private bool BoatExists(string id)
         {
-            return _context.Reports.Any(e => e.ReportID == id);
+            return _context.Boats.Any(e => e.BoatId == id);
         }
     }
 }

@@ -10,9 +10,13 @@ namespace LmycWeb.Models
     {
         [Key]
         public string EmergencyContactId { get; set; }
+        [Display(Name = "Emergency Contact #1 Name")]
         public string Name1 { get; set; }
+        [Display(Name = "Emergency Contact #1 Phone Number")]
         public string Phone1 { get; set; }
+        [Display(Name = "Emergency Contact #2 Name")]
         public string Name2 { get; set; }
+        [Display(Name = "Emergency Contact #2 Phone Number")]
         public string Phone2 { get; set; }
     }
 }
