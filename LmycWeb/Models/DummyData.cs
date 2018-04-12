@@ -355,7 +355,7 @@ namespace LmycWeb.Models
                     CodeId = Class2.CodeId,
                 }
             };
-            return null;
+            return Reports;
         }
     }
 }
