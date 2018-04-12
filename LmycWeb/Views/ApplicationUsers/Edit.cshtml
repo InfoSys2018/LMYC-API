@@ -35,8 +35,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="MemberStatus" class="control-label"></label>
-                <input asp-for="MemberStatus" class="form-control" />
-                <span asp-validation-for="MemberStatus" class="text-danger"></span>
+                @*<input asp-for="MemberStatus" class="form-control" />
+        <span asp-validation-for="MemberStatus" class="text-danger"></span>*@
+                <select asp-for="MemberStatus" asp-items="ViewBag.Role"></select>
             </div>
             <div class="form-group">
                 <label asp-for="SkipperStatus" class="control-label"></label>
