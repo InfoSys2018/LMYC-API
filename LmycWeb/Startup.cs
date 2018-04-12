@@ -27,6 +27,15 @@ namespace LmycWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add service and create Policy with options
+            services.AddCors(options => {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
+
             services.AddMvc();
 
             
@@ -45,15 +54,6 @@ namespace LmycWeb
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-
-            // Add service and create Policy with options
-            services.AddCors(options => {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
-            });
 
             // Register the OAuth2 validation handler.
             services.AddAuthentication()
@@ -108,6 +108,8 @@ namespace LmycWeb
             app.UseStaticFiles();
 
             app.UseAuthentication();
+
+            app.UseCors("CorsPolicy");
 
             app.UseMvc(routes =>
             {
