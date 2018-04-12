@@ -13,7 +13,7 @@ namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/ApplicationUsers")]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class ApplicationUsersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -31,15 +31,16 @@ namespace LmycWeb.APIControllers
         }
 
         // GET: api/ApplicationUsers/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetApplicationUser([FromRoute] string id)
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetApplicationUser([FromRoute] string username)
         {
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.Id == id);
+            var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
 
             if (applicationUser == null)
             {
