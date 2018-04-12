@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Cors;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/ApplicationUsers")]
+    [Route("api/applicationusers")]
     [EnableCors("AllowAllOrigins")]
     public class ApplicationUsersController : Controller
     {
