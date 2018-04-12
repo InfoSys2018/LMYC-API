@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace LmycWeb.Controllers
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        private readonly UserManager<ApplicationUser> _userManager; 
         public ReportsController(ApplicationDbContext context)
         {
             _context = context;
