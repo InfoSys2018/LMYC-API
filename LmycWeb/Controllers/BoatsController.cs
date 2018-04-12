@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
 using Microsoft.AspNetCore.Authorization;
+using LmycWeb.ViewModels;
+using System.IO;
 
 namespace LmycWeb.Controllers
 {
@@ -56,15 +58,34 @@ namespace LmycWeb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] Boat boat)
+        public async Task<IActionResult> Create([Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] BoatViewModel boatViewModel)
         {
             if (ModelState.IsValid)
             {
+                var boat = new Boat
+                {
+                    BoatId = boatViewModel.BoatId,
+                    Name = boatViewModel.Name,
+                    CreditsPerHour = boatViewModel.CreditsPerHour,
+                    Status = boatViewModel.Status,
+                    Description = boatViewModel.Description,
+                    Length = boatViewModel.Length,
+                    Make = boatViewModel.Make,
+                    Year = boatViewModel.Year
+                };
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    await boatViewModel.Photo.CopyToAsync(memoryStream);
+                    boat.Photo = memoryStream.ToArray();
+                }
+
                 _context.Add(boat);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(boat);
+
+            return View(boatViewModel);
         }
 
         // GET: Boats/Edit/5
