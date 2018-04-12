@@ -52,6 +52,29 @@ namespace LmycWeb.APIControllers
             return Ok(booking);
         }
 
+
+        // GET: api/Bookings/5
+        [Route("boat/{id}")]
+        [HttpGet]
+        public IActionResult GetBookingByBoat([FromRoute] string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var booking = _context.Bookings.Where(m => m.BoatId == id).Where(m => m.StartDateTime > DateTime.Now);
+
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(booking);
+        }
+
+
+
         // PUT: api/Bookings/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBooking([FromRoute] string id, [FromBody] Booking booking)
@@ -77,13 +100,18 @@ namespace LmycWeb.APIControllers
                 }
             }
 
-            _context.Entry(booking).State = EntityState.Modified;
-
-            //Charge the credits to each user if there is any credits to be charged
+            //Refund old charges then Charge the newly allocated credits to each user 
+            //if there is any credits to be charged
             if (booking.CreditsUsed != 0)
             {
-                await RefundAndChargeNewAllocationAsync(booking.Members, id);
+                var oldBooking = await _context.Bookings.SingleOrDefaultAsync(m => m.BookingId == id);
+                RefundBookingMemberCredits(oldBooking.Members);
+                ChargeBookingMemberCredits(booking.Members);
             }
+
+            _context.Entry(booking).State = EntityState.Modified;
+
+            
 
             try
             {
