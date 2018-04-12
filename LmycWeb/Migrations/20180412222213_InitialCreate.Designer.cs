@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
-namespace LmycWeb.Data.Migrations
+namespace LmycWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180411100601_FirstMigrations")]
-    partial class FirstMigrations
+    [Migration("20180412222213_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -183,11 +183,11 @@ namespace LmycWeb.Data.Migrations
 
                     b.Property<string>("DocumentName");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("Id");
 
                     b.HasKey("DocumentId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Id");
 
                     b.ToTable("Documents");
                 });
@@ -215,6 +215,8 @@ namespace LmycWeb.Data.Migrations
                     b.Property<string>("UserId");
 
                     b.Property<string>("BookingId");
+
+                    b.Property<int>("AllocatedCredits");
 
                     b.HasKey("UserId", "BookingId");
 
@@ -531,7 +533,7 @@ namespace LmycWeb.Data.Migrations
                 {
                     b.HasOne("LmycWeb.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("Id");
                 });
 
             modelBuilder.Entity("LmycWeb.Models.Member", b =>
