@@ -74,6 +74,27 @@ namespace LmycWeb.APIControllers
         }
 
 
+        // GET: api/Bookings/5
+        [Route("user/{id}")]
+        [HttpGet]
+        public IActionResult GetBookingByUser([FromRoute] string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var booking = _context.Bookings.Where(m => m.UserId == id);
+
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(booking);
+        }
+
+
 
         // PUT: api/Bookings/5
         [HttpPut("{id}")]
