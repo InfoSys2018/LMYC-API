@@ -11,9 +11,10 @@ using System;
 namespace LmycWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180412002551_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,12 +183,11 @@ namespace LmycWeb.Migrations
 
                     b.Property<string>("DocumentName");
 
-                    b.Property<string>("Id");
+                    b.Property<string>("UserId");
 
                     b.HasKey("DocumentId");
 
-                    b.HasIndex("Id");
-
+                    b.HasIndex("UserId");
 
                     b.ToTable("Documents");
                 });
@@ -533,8 +533,7 @@ namespace LmycWeb.Migrations
                 {
                     b.HasOne("LmycWeb.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("Id");
-
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("LmycWeb.Models.Member", b =>
