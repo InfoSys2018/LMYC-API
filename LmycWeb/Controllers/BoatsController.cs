@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
 using Microsoft.AspNetCore.Authorization;
+using LmycWeb.ViewModels;
+using System.IO;
 
 namespace LmycWeb.Controllers
 {
@@ -56,15 +58,34 @@ namespace LmycWeb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] Boat boat)
+        public async Task<IActionResult> Create([Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] BoatViewModel boatViewModel)
         {
             if (ModelState.IsValid)
             {
+                var boat = new Boat
+                {
+                    BoatId = boatViewModel.BoatId,
+                    Name = boatViewModel.Name,
+                    CreditsPerHour = boatViewModel.CreditsPerHour,
+                    Status = boatViewModel.Status,
+                    Description = boatViewModel.Description,
+                    Length = boatViewModel.Length,
+                    Make = boatViewModel.Make,
+                    Year = boatViewModel.Year
+                };
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    await boatViewModel.Photo.CopyToAsync(memoryStream);
+                    boat.Photo = memoryStream.ToArray();
+                }
+
                 _context.Add(boat);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(boat);
+
+            return View(boatViewModel);
         }
 
         // GET: Boats/Edit/5
@@ -76,11 +97,24 @@ namespace LmycWeb.Controllers
             }
 
             var boat = await _context.Boats.SingleOrDefaultAsync(m => m.BoatId == id);
+
+            var boatViewModel = new BoatViewModel
+            {
+                BoatId = boat.BoatId,
+                Name = boat.Name,
+                CreditsPerHour = boat.CreditsPerHour,
+                Status = boat.Status,
+                Description = boat.Description,
+                Length = boat.Length,
+                Make = boat.Make,
+                Year = boat.Year
+            };
+            
             if (boat == null)
             {
                 return NotFound();
             }
-            return View(boat);
+            return View(boatViewModel);
         }
 
         // POST: Boats/Edit/5
@@ -88,9 +122,9 @@ namespace LmycWeb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] Boat boat)
+        public async Task<IActionResult> Edit(string id, [Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] BoatViewModel boatViewModel)
         {
-            if (id != boat.BoatId)
+            if (id != boatViewModel.BoatId)
             {
                 return NotFound();
             }
@@ -99,12 +133,31 @@ namespace LmycWeb.Controllers
             {
                 try
                 {
+
+                    var boat = new Boat
+                    {
+                        BoatId = boatViewModel.BoatId,
+                        Name = boatViewModel.Name,
+                        CreditsPerHour = boatViewModel.CreditsPerHour,
+                        Status = boatViewModel.Status,
+                        Description = boatViewModel.Description,
+                        Length = boatViewModel.Length,
+                        Make = boatViewModel.Make,
+                        Year = boatViewModel.Year
+                    };
+
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await boatViewModel.Photo.CopyToAsync(memoryStream);
+                        boat.Photo = memoryStream.ToArray();
+                    }
+
                     _context.Update(boat);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BoatExists(boat.BoatId))
+                    if (!BoatExists(boatViewModel.BoatId))
                     {
                         return NotFound();
                     }
@@ -115,7 +168,8 @@ namespace LmycWeb.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(boat);
+
+            return View(boatViewModel);
         }
 
         // GET: Boats/Delete/5
