@@ -86,7 +86,7 @@ namespace LmycWeb.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmergencyContactId"] = new SelectList(_context.EmergencyContacts, "EmergencyContactId", "EmergencyContactId", applicationUser.EmergencyContactId);
+            
             UserViewModel userViewModel = new UserViewModel
             {
                 Id = applicationUser.Id,
@@ -101,7 +101,8 @@ namespace LmycWeb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, UserViewModel userViewModel, [Bind("FirstName,LastName,MemberStatus,SkipperStatus,Street,City,Province,PostalCode,Country,MobilePhone,HomePhone,WorkPhone,SailingQualifications,Skills,SailingExperience,Credits,EmergencyContactId,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] ApplicationUser applicationUser)
+        //[Bind("FirstName,LastName,MemberStatus,SkipperStatus,Street,City,Province,PostalCode,Country,MobilePhone,HomePhone,WorkPhone,SailingQualifications,Skills,SailingExperience,Credits,EmergencyContact,Id,UserName,Email")]
+        public async Task<IActionResult> Edit(string id, UserViewModel userViewModel, ApplicationUser applicationUser)
         {
             if (id != applicationUser.Id)
             {
@@ -112,11 +113,14 @@ namespace LmycWeb.Controllers
             {
                 try
                 {
+
+                    //var updatedUser = _context.Users.SingleOrDefault(x => x.Id == userViewModel.Id);
+                    //await this._userManager.AddToRoleAsync(updatedUser, userViewModel.Role);
+
                     _context.Update(applicationUser);
                     await _context.SaveChangesAsync();
 
-                    var updatedUser = _context.Users.SingleOrDefault(x => x.Id == userViewModel.Id);
-                    await this._userManager.AddToRoleAsync(updatedUser, userViewModel.Role);
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -129,9 +133,11 @@ namespace LmycWeb.Controllers
                         throw;
                     }
                 }
+
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmergencyContactId"] = new SelectList(_context.EmergencyContacts, "EmergencyContactId", "EmergencyContactId", applicationUser.EmergencyContactId);
+           
             return View(applicationUser);
         }
 

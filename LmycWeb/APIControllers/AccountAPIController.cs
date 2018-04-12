@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/AccountAPI")]
+    [Route("api/Accounts")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("AllowAllOrigins")]
     public class AccountAPIController : Controller
