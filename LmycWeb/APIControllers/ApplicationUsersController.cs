@@ -7,66 +7,63 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
-using AspNet.Security.OAuth.Validation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Reports")]
-    [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("CorsPolicy")]
-    public class ReportsController : Controller
+    [Route("api/ApplicationUsers")]
+    [EnableCors("AllowAllOrigins")]
+    public class ApplicationUsersController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ReportsController(ApplicationDbContext context)
+        public ApplicationUsersController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Reports
+        // GET: api/ApplicationUsers
         [HttpGet]
-        public IEnumerable<Report> GetReport()
+        public IEnumerable<ApplicationUser> GetApplicationUser()
         {
-            return _context.Reports;
+            return _context.ApplicationUser;
         }
 
-        // GET: api/Reports/5
+        // GET: api/ApplicationUsers/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetReport([FromRoute] string id)
+        public async Task<IActionResult> GetApplicationUser([FromRoute] string id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var report = await _context.Reports.SingleOrDefaultAsync(m => m.ReportID == id);
+            var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.Id == id);
 
-            if (report == null)
+            if (applicationUser == null)
             {
                 return NotFound();
             }
 
-            return Ok(report);
+            return Ok(applicationUser);
         }
 
-        // PUT: api/Reports/5
+        // PUT: api/ApplicationUsers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReport([FromRoute] string id, [FromBody] Report report)
+        public async Task<IActionResult> PutApplicationUser([FromRoute] string id, [FromBody] ApplicationUser applicationUser)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != report.ReportID)
+            if (id != applicationUser.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(report).State = EntityState.Modified;
+            _context.Entry(applicationUser).State = EntityState.Modified;
 
             try
             {
@@ -74,7 +71,7 @@ namespace LmycWeb.APIControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ReportExists(id))
+                if (!ApplicationUserExists(id))
                 {
                     return NotFound();
                 }
@@ -87,45 +84,45 @@ namespace LmycWeb.APIControllers
             return NoContent();
         }
 
-        // POST: api/Reports
+        // POST: api/ApplicationUsers
         [HttpPost]
-        public async Task<IActionResult> PostReport([FromBody] Report report)
+        public async Task<IActionResult> PostApplicationUser([FromBody] ApplicationUser applicationUser)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Reports.Add(report);
+            _context.ApplicationUser.Add(applicationUser);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetReport", new { id = report.ReportID }, report);
+            return CreatedAtAction("GetApplicationUser", new { id = applicationUser.Id }, applicationUser);
         }
 
-        // DELETE: api/Reports/5
+        // DELETE: api/ApplicationUsers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReport([FromRoute] string id)
+        public async Task<IActionResult> DeleteApplicationUser([FromRoute] string id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var report = await _context.Reports.SingleOrDefaultAsync(m => m.ReportID == id);
-            if (report == null)
+            var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.Id == id);
+            if (applicationUser == null)
             {
                 return NotFound();
             }
 
-            _context.Reports.Remove(report);
+            _context.ApplicationUser.Remove(applicationUser);
             await _context.SaveChangesAsync();
 
-            return Ok(report);
+            return Ok(applicationUser);
         }
 
-        private bool ReportExists(string id)
+        private bool ApplicationUserExists(string id)
         {
-            return _context.Reports.Any(e => e.ReportID == id);
+            return _context.ApplicationUser.Any(e => e.Id == id);
         }
     }
 }
