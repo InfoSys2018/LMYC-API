@@ -20,7 +20,7 @@ namespace XUnitTestProject1
         [Fact]
         public void GetApplicationUserWhenModelStateInvalid()
         {
-            var controller = new ApplicationUsersController(null);
+            var controller = new ApplicationUsersController(null, null);
             controller.ModelState.AddModelError("key", "message");
 
             var result = controller.GetApplicationUser(null);
@@ -33,7 +33,7 @@ namespace XUnitTestProject1
         [Fact]
         public void GetApplicationUserWithNegativeIDReturnsNotFound()
         {
-            var controller = new ApplicationUsersController(null);
+            var controller = new ApplicationUsersController(null, null);
             var result = controller.GetApplicationUser("-1");
             Assert.IsType<NotFoundResult>(result.Result);
         }
@@ -54,7 +54,7 @@ namespace XUnitTestProject1
             var mockList = Helpers.ToAsyncDbSetMock(testMembers);
             mockContext.Setup(c => c.ApplicationUser).Returns(mockList.Object);
 
-            var controller = new ApplicationUsersController(mockContext.Object);
+            var controller = new ApplicationUsersController(mockContext.Object, null);
             var result = await controller.PostApplicationUser(user);
                         Assert.IsType<CreatedAtActionResult>(result);
 
@@ -65,7 +65,7 @@ namespace XUnitTestProject1
         public async Task PostapplicationUserWhenModelStateIsNotValid()
         {
             ApplicationUser user = new ApplicationUser();
-            var controller = new ApplicationUsersController(null);
+            var controller = new ApplicationUsersController(null, null);
             controller.ModelState.AddModelError("key", "error message");
 
             var result = await controller.PostApplicationUser(user);
@@ -95,7 +95,7 @@ namespace XUnitTestProject1
             var mockList = Helpers.ToAsyncDbSetMock(testMembers);
             mockContext.Setup(c => c.ApplicationUser).Returns(mockList.Object);
 
-            var controller = new ApplicationUsersController(mockContext.Object);
+            var controller = new ApplicationUsersController(mockContext.Object, null);
             var result = await controller.DeleteApplicationUser(id);
             Assert.IsType<OkObjectResult>(result);
         }
@@ -104,7 +104,7 @@ namespace XUnitTestProject1
         [InlineData("a001")]
         public async Task DeleteUserModeStateNotValid(string id)
         {
-            var controller = new ApplicationUsersController(null);
+            var controller = new ApplicationUsersController(null, null);
             controller.ModelState.AddModelError("key", "error message");
             var result = await controller.DeleteApplicationUser(id);
             var requestResult = Assert.IsType<BadRequestObjectResult>(result);

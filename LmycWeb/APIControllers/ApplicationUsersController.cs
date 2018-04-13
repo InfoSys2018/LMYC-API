@@ -10,6 +10,7 @@ using LmycWeb.Data;
 using LmycWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Identity;
 using LmycWeb.Interfaces;
 
 namespace LmycWeb.APIControllers
@@ -21,9 +22,12 @@ namespace LmycWeb.APIControllers
     public class ApplicationUsersController : Controller
     {
         private readonly IDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ApplicationUsersController(IDbContext context)
+        public ApplicationUsersController(IDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _context = context;
         }
 
@@ -95,7 +99,7 @@ namespace LmycWeb.APIControllers
             user.EmergencyContacts.Name2 = applicationUser.EmergencyContacts.Name2;
             user.EmergencyContacts.Phone1 = applicationUser.EmergencyContacts.Phone1;
             user.EmergencyContacts.Phone2 = applicationUser.EmergencyContacts.Phone2;
-            
+
 
             _context.Entry(user).State = EntityState.Modified;
 
@@ -114,6 +118,26 @@ namespace LmycWeb.APIControllers
                     throw;
                 }
             }
+
+            return NoContent();
+        }
+
+        // PUT: api/ApplicationUsers/5
+        [HttpPatch("{username}")]
+        public async Task<IActionResult> PutApplicationUser([FromRoute] string username, [FromBody] ChangePasswordRequest changePasswordRequest)
+        {
+            var user = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
+            var id = user.Id;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordRequest.CurrentPassword, changePasswordRequest.NewPassword);
+
+            if (!result.Succeeded)
+                return BadRequest("Invalid password.");
 
             return NoContent();
         }
@@ -158,5 +182,11 @@ namespace LmycWeb.APIControllers
         {
             return _context.ApplicationUser.Any(e => e.Id == id);
         }
+    }
+
+    public class ChangePasswordRequest
+    {
+        public string CurrentPassword { get; set; }
+        public string NewPassword { get; set; }
     }
 }
