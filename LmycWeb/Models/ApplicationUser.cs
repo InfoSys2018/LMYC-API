@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using LmycWeb.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace LmycWeb.Models
 {
@@ -40,5 +43,8 @@ namespace LmycWeb.Models
         public EmergencyContact EmergencyContacts { get; set; }
         public List<Booking> Bookings { get; set; }
         public List<Report> Reports { get; set; }
+        [NotMapped]
+        public int TotalHours { get; set; }
+
     }
 }
