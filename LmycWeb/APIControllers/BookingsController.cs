@@ -119,6 +119,14 @@ namespace LmycWeb.APIControllers
             {
                 return BadRequest("Boat does not exist given ID!");
             }
+            else if (!IsValidDateRange(startTime, selectedDate))
+            {
+                return BadRequest("Start date cannot be after end date!");
+            }
+            else if (!IsValidTimeSpan(startTime, selectedDate))
+            {
+                return BadRequest("Bookings cannot be more than 3 days");
+            }
 
             DateTime maxDate = selectedDate.AddDays(3);
 
@@ -159,16 +167,23 @@ namespace LmycWeb.APIControllers
 
 
         // GET: api/Bookings/5
-        [Route("user/{id}")]
+        [Route("user/{userName}")]
         [HttpGet]
-        public IActionResult GetBookingByUser([FromRoute] string id)
+        public IActionResult GetBookingByUser([FromRoute] string userName)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var booking = _context.Bookings.Where(m => m.UserId == id);
+            var user = _context.Users.SingleOrDefaultAsync(u => u.UserName.Equals(userName));
+
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            var booking = _context.Bookings.Where(m => m.UserId.Equals(user.Id));
 
             if (booking == null)
             {
@@ -194,6 +209,18 @@ namespace LmycWeb.APIControllers
                 return BadRequest();
             }
 
+
+            //Check if boat is operational
+            bool boatIsOperational = await CheckBoatIsInGoodStatusAsync(booking.BoatId);
+
+            if (!boatIsOperational)
+            {
+                return BadRequest("Selected boat is not operational");
+            }
+
+            //Calculate the total credit cost using the start and end dates
+            booking.CreditsUsed = (int)CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
+
             //Check if the members have enough for the newly allocated credits
             if (booking.CreditsUsed != 0)
             {
@@ -215,8 +242,6 @@ namespace LmycWeb.APIControllers
             }
 
             _context.Entry(booking).State = EntityState.Modified;
-
-            
 
             try
             {
@@ -254,8 +279,19 @@ namespace LmycWeb.APIControllers
                 return BadRequest("The user can't create the booking because they are not in good standing.");
             }
 
+            //Check if boat is operational
+            bool boatIsOperational = await CheckBoatIsInGoodStatusAsync(booking.BoatId);
+
+            if (!boatIsOperational)
+            {
+                return BadRequest("Selected boat is not operational");
+            }
+
+            //Calculate the total credit cost using the start and end dates
+            booking.CreditsUsed = (int) CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
+
             //Check if the booking requires credits
-            if (booking.CreditsUsed != 0)
+            else if (booking.CreditsUsed != 0)
             {
                 bool result = await CheckMembersHaveEnoughCreditsAsync(booking.Members);
 
@@ -264,7 +300,20 @@ namespace LmycWeb.APIControllers
                     return BadRequest("A member does not have enough credits");
                 }
             }
+            else if (!IsValidDateRange(booking.StartDateTime, booking.EndDateTime))
+            {
+                return BadRequest("Start date cannot be after end date!");
+            }
+            else if (!IsValidTimeSpan(booking.StartDateTime, booking.EndDateTime))
+            {
+                return BadRequest("Bookings cannot be more than 3 days");
+            }
+            else if (!IsValidBookingDateRange(booking.BoatId, booking.StartDateTime, booking.EndDateTime).Result)
+            {
+                return BadRequest("Date has been previously reserved");
+            }
 
+            //Check skipper status of members
             int totalDays = (booking.EndDateTime - booking.StartDateTime).Days;
 
             bool skipperStatusResult;
@@ -466,6 +515,128 @@ namespace LmycWeb.APIControllers
             return false;
         }
 
+        public int CalculateCredits(DateTime startDate, DateTime endDate, string boatId)
+        {
+            //Get Boat info
+            var boat = _context.Boats.SingleOrDefault(m => m.BoatId.Equals(boatId));
+            var creditChargePerHour = boat.CreditsPerHour;
+
+            //Calculate booking info
+            var totalHoursOfBooking = (endDate - startDate).TotalHours;
+
+            int totalCredits = 0;
+
+            // *********** Calculate Credits *************
+
+            //Calculate if 24 Hour rule applies
+            DateTime currentDay = DateTime.Now;
+            var hoursBeforeBooking = (int)(startDate - currentDay).TotalHours;
+            int freeHours = 0;
+
+            if (hoursBeforeBooking < 24)
+            {
+                freeHours = 24 - hoursBeforeBooking;
+            }
+
+            DayOfWeek startDay = startDate.DayOfWeek;
+            var hoursInFirstDay = 24 - startDate.Hour - freeHours;
+
+            if (startDay == DayOfWeek.Saturday || startDay == DayOfWeek.Sunday)
+            {
+                if (hoursInFirstDay >= 15)
+                {
+                    totalCredits += 15 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += hoursInFirstDay * creditChargePerHour;
+                }
+            }
+            else
+            {
+                if (hoursInFirstDay >= 10)
+                {
+                    totalCredits += 10 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += hoursInFirstDay * creditChargePerHour;
+                }
+
+            }
+
+            //Iterate through dates between start and end date
+            var startDayOfYear = startDate.DayOfYear;
+            var endDayOfYear = endDate.DayOfYear;
+
+            var tempDayOfYear = startDayOfYear + 1;
+            var tempDate = startDate.AddDays(1);
+
+            while (tempDayOfYear < endDayOfYear)
+            {
+
+                DayOfWeek day = tempDate.DayOfWeek;
+
+                //Check if its a weekend
+                if (day == DayOfWeek.Saturday || day == DayOfWeek.Sunday)
+                {
+                    totalCredits += 15 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += 10 * creditChargePerHour;
+                }
+
+
+                tempDate = tempDate.AddDays(1);
+                tempDayOfYear++;
+            }
+
+            //Calculate Credits for last day
+            DayOfWeek endDay = endDate.DayOfWeek;
+            var hoursInLastDay = endDate.Hour;
+
+
+            if (endDay == DayOfWeek.Saturday || endDay == DayOfWeek.Sunday)
+            {
+                if (hoursInLastDay >= 15)
+                {
+                    totalCredits += 15 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += hoursInLastDay * creditChargePerHour;
+                }
+            }
+            else
+            {
+                if (hoursInLastDay >= 10)
+                {
+                    totalCredits += 10 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += hoursInLastDay * creditChargePerHour;
+                }
+
+            }
+
+            return totalCredits;
+        }
+
+        public async Task<bool> CheckBoatIsInGoodStatusAsync(string boatId)
+        {
+            var boat = await _context.Boats.SingleOrDefaultAsync(b => b.BoatId.Equals(boatId));
+
+            if (boat.Status.Equals("operational"))
+            {
+                return true;
+            }
+
+
+            return false;
+        }
+
         private List<DateTime> CreateSemiHourlyList(DateTime selectedTime)
         {
             List<DateTime> list = new List<DateTime>();
@@ -493,8 +664,26 @@ namespace LmycWeb.APIControllers
             return list;
         }
 
+        private Boolean IsValidDateRange(DateTime startTime, DateTime endTime)
+        {
+            return endTime > startTime;
+        }
 
+        private Boolean IsValidTimeSpan(DateTime startTime, DateTime endTime)
+        {
+            TimeSpan diff = endTime.Subtract(startTime);
 
+            return (int)diff.TotalHours <= 72;
+        }
+
+        private async Task<Boolean> IsValidBookingDateRange(string boatId, DateTime startTime, DateTime endTime)
+        {
+            DateTime nextStartDate = await _context.Bookings.Where(d => d.StartDateTime > startTime
+                && d.BoatId == boatId && d.StartDateTime < endTime)
+                .Select(s => s.StartDateTime).FirstOrDefaultAsync();
+
+            return nextStartDate == null;
+        }
 
     }
 }

@@ -7,6 +7,8 @@ using Xunit;
 using LmycWeb.APIControllers;
 using LmycWeb.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using XUnitTestProject;
+using System.Threading.Tasks;
 
 namespace XUnitTestProject1
 {
@@ -77,19 +79,21 @@ namespace XUnitTestProject1
         }
 
         //[Fact(Skip = "Incomplete: mock dbcontext.Entry()")]
-        [Fact]
-        public void PutProject_()
-        {
-            string id = "MyFavBoat5555";
-            var project = testBoats[0];
+        //[Fact]
+        //public async Task PutBoat()
+        //{
+        //    string id = "B01";
+        //    var boat = testBoats[0];
 
-            var dbContext = new Mock<IDbContext>();
-            var mockList = MockDbSet(testBoats);
-            dbContext.Setup(c => c.Boats).Returns(mockList.Object);
-            var controller = new BoatsApiController(dbContext.Object);
+        //    var dbContext = new Mock<IDbContext>();
+        //    //var mockList = MockDbSet(testBoats);
+        //    var mockList = Helpers.ToAsyncDbSetMock(testBoats);
+        //    dbContext.Setup(c => c.Boats).Returns(mockList.Object);
+        //    var controller = new BoatsApiController(dbContext.Object);
 
-            var result = controller.PutBoat(id, project);
-        }
+        //    var result = controller.PutBoat(id, boat);
+        //    Assert.IsType<NoContentResult>(result);
+        //}
 
         [Fact]
         public void PostBoat_WhenModelStateIsInvalid()
@@ -117,44 +121,6 @@ namespace XUnitTestProject1
 
             Assert.IsType<CreatedAtActionResult>(result.Result);
         }
-
-
-
-
-        //[Theory]
-        //[InlineData("B01")]
-        //public void GetBoatsWithBoatId(string boatId)
-        //{
-        //    //var boat = new Boat();
-
-        //    var dbContext = new Mock<IDbContext>();
-        //    var mockList = MockDbSet(testBoats);
-        //    dbContext.Setup(c => c.Boats).Returns(mockList.Object);
-
-        //    var controller = new BoatsApiController(dbContext.Object);
-        //    var result = controller.GetBoat(boatId).GetType();
-        //    var expected = typeof(Boat);
-        //    Assert.NotNull(result);
-        //    //Assert.IsType<Boat>(result);
-        //    //Assert.IsType<List<Boat>>(result);
-        //    Assert.IsType(expected, result);
-
-        //}
-
-        //[Fact]
-        //public void BoatNotFoundTest()
-        //{
-        //    string boatId = "invalidId";
-
-        //    var dbContext = new Mock<IDbContext>();
-        //    var mockList = MockDbSet(testBoats);
-        //    dbContext.Setup(c => c.Boats).Returns(mockList.Object);
-
-        //    var controller = new BoatsApiController(dbContext.Object);
-        //    var result = controller.GetBoat(boatId);
-
-        //    Assert.IsType<NotFoundResult>(result.Result);
-        //}
 
 
         /* Helper methods and sample data */
