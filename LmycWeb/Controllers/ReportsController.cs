@@ -94,6 +94,7 @@ namespace LmycWeb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("ReportID,Content,Hours,Approved,DateCreated,Id,UserId,CodeId")] Report report)
+
         {
             if (id != report.ReportID)
             {
