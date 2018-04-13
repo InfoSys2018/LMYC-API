@@ -281,14 +281,14 @@ namespace LmycWeb.APIControllers
             //Check if boat is operational
             bool boatIsOperational = await CheckBoatIsInGoodStatusAsync(booking.BoatId);
 
+            //Calculate the total credit cost using the start and end dates
+            booking.CreditsUsed = (int)CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
+
+
             if (!boatIsOperational)
             {
                 return BadRequest("Selected boat is not operational");
             }
-
-            //Calculate the total credit cost using the start and end dates
-            booking.CreditsUsed = (int) CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
-
             //Check if the booking requires credits
             else if (booking.CreditsUsed != 0)
             {
