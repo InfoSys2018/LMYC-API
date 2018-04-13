@@ -10,6 +10,7 @@ using LmycWeb.Data;
 using LmycWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Identity;
 
 namespace LmycWeb.APIControllers
 {
@@ -20,9 +21,12 @@ namespace LmycWeb.APIControllers
     public class ApplicationUsersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ApplicationUsersController(ApplicationDbContext context)
+        public ApplicationUsersController(ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _context = context;
         }
 
@@ -45,6 +49,7 @@ namespace LmycWeb.APIControllers
             
             var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
             var emergencyContacts = await _context.EmergencyContacts.SingleOrDefaultAsync(c => c.EmergencyContactId == applicationUser.EmergencyContactId);
+
             applicationUser.EmergencyContacts.Name1 = emergencyContacts.Name1;
             applicationUser.EmergencyContacts.Phone1 = emergencyContacts.Phone1;
             applicationUser.EmergencyContacts.Name2 = emergencyContacts.Name2;
@@ -59,9 +64,12 @@ namespace LmycWeb.APIControllers
         }
 
         // PUT: api/ApplicationUsers/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutApplicationUser([FromRoute] string id, [FromBody] ApplicationUser applicationUser)
+        [HttpPut("{username}")]
+        public async Task<IActionResult> PutApplicationUser([FromRoute] string username, [FromBody] ApplicationUser applicationUser)
         {
+            var user = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
+            var id = user.Id;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -72,7 +80,27 @@ namespace LmycWeb.APIControllers
                 return BadRequest();
             }
 
-            _context.Entry(applicationUser).State = EntityState.Modified;
+            user.FirstName = applicationUser.FirstName;
+            user.LastName = applicationUser.LastName;
+            user.HomePhone = applicationUser.HomePhone;
+            user.MobilePhone = applicationUser.MobilePhone;
+            user.WorkPhone = applicationUser.WorkPhone;
+            user.Email = applicationUser.Email;
+
+            user.SailingExperience = applicationUser.SailingExperience;
+            user.SailingQualifications = applicationUser.SailingQualifications;
+            user.Skills = applicationUser.Skills;
+
+            if (user.EmergencyContacts == null)
+                user.EmergencyContacts = new EmergencyContact();
+
+            user.EmergencyContacts.Name1 = applicationUser.EmergencyContacts.Name1;
+            user.EmergencyContacts.Name2 = applicationUser.EmergencyContacts.Name2;
+            user.EmergencyContacts.Phone1 = applicationUser.EmergencyContacts.Phone1;
+            user.EmergencyContacts.Phone2 = applicationUser.EmergencyContacts.Phone2;
+
+
+            _context.Entry(user).State = EntityState.Modified;
 
             try
             {
@@ -89,6 +117,26 @@ namespace LmycWeb.APIControllers
                     throw;
                 }
             }
+
+            return NoContent();
+        }
+
+        // PUT: api/ApplicationUsers/5
+        [HttpPatch("{username}")]
+        public async Task<IActionResult> PutApplicationUser([FromRoute] string username, [FromBody] ChangePasswordRequest changePasswordRequest)
+        {
+            var user = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
+            var id = user.Id;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordRequest.CurrentPassword, changePasswordRequest.NewPassword);
+
+            if (!result.Succeeded)
+                return BadRequest("Invalid password.");
 
             return NoContent();
         }
@@ -133,5 +181,11 @@ namespace LmycWeb.APIControllers
         {
             return _context.ApplicationUser.Any(e => e.Id == id);
         }
+    }
+
+    public class ChangePasswordRequest
+    {
+        public string CurrentPassword { get; set; }
+        public string NewPassword { get; set; }
     }
 }
