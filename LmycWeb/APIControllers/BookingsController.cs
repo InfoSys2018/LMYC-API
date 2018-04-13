@@ -234,8 +234,6 @@ namespace LmycWeb.APIControllers
 
             _context.Entry(booking).State = EntityState.Modified;
 
-            
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -496,7 +494,6 @@ namespace LmycWeb.APIControllers
             return false;
         }
 
-
         public int CalculateCredits(DateTime startDate, DateTime endDate, string boatId)
         {
             //Get Boat info
@@ -512,7 +509,7 @@ namespace LmycWeb.APIControllers
 
             //Calculate if 24 Hour rule applies
             DateTime currentDay = DateTime.Now;
-            var hoursBeforeBooking = (int) (startDate - currentDay).TotalHours;
+            var hoursBeforeBooking = (int)(startDate - currentDay).TotalHours;
             int freeHours = 0;
 
             if (hoursBeforeBooking < 24)
@@ -522,34 +519,6 @@ namespace LmycWeb.APIControllers
 
             DayOfWeek startDay = startDate.DayOfWeek;
             var hoursInFirstDay = 24 - startDate.Hour - freeHours;
-
-        private List<DateTime> CreateSemiHourlyList(DateTime selectedTime)
-        {
-            List<DateTime> list = new List<DateTime>();
-            list.Add(selectedTime);
-
-            for (int i = 0; i < 23; i++)
-            {
-                selectedTime = selectedTime.AddHours(1);
-                list.Add(selectedTime);
-            }
-
-            return list;
-        }
-
-        private List<DateTime> CreateSemiHourlyListWithRange(DateTime startTime, DateTime endTime)
-        {
-            List<DateTime> list = new List<DateTime>();
-
-            while (startTime != endTime)
-            {
-                startTime = startTime.AddHours(1);
-                list.Add(startTime);
-            }
-
-            return list;
-        }
-
 
             if (startDay == DayOfWeek.Saturday || startDay == DayOfWeek.Sunday)
             {
@@ -647,6 +616,32 @@ namespace LmycWeb.APIControllers
             return false;
         }
 
+        private List<DateTime> CreateSemiHourlyList(DateTime selectedTime)
+        {
+            List<DateTime> list = new List<DateTime>();
+            list.Add(selectedTime);
+
+            for (int i = 0; i < 23; i++)
+            {
+                selectedTime = selectedTime.AddHours(1);
+                list.Add(selectedTime);
+            }
+
+            return list;
+        }
+
+        private List<DateTime> CreateSemiHourlyListWithRange(DateTime startTime, DateTime endTime)
+        {
+            List<DateTime> list = new List<DateTime>();
+
+            while (startTime != endTime)
+            {
+                startTime = startTime.AddHours(1);
+                list.Add(startTime);
+            }
+
+            return list;
+        }
 
     }
 }
