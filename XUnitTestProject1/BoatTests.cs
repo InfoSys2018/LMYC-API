@@ -38,21 +38,6 @@ namespace XUnitTestProject1
             Assert.IsType<SerializableError>(badRequestResult.Value);
         }
 
-        [Fact(Skip = "Issue with SingleOrDefaultAsync call")]
-        public void GetBoat_WhenBoatNotFound()
-        {
-            string boatId = "x";
-            var dbContext = new Mock<IDbContext>();
-            var mockList = MockDbSet(testBoats);
-            dbContext.Setup(c => c.Boats).Returns(mockList.Object);
-
-            var controller = new BoatsApiController(dbContext.Object);
-
-            var result = controller.GetBoat(boatId);
-
-            Assert.IsType<NotFoundResult>(result.Result);
-        }
-
         //[Fact]
         //public void PutProject_WhenModelStateIsInvalid()
         //{

@@ -29,15 +29,6 @@ namespace XUnitTestProject1
             Assert.IsType<SerializableError>(badRequestResult.Value);
         }
 
-        //check negative id's can't be used to get an ApplicationUser
-        [Fact]
-        public void GetApplicationUserWithNegativeIDReturnsNotFound()
-        {
-            var controller = new ApplicationUsersController(null, null);
-            var result = controller.GetApplicationUser("-1");
-            Assert.IsType<NotFoundResult>(result.Result);
-        }
-
         [Fact]
         public async Task PostapplicationUserSuccess()
         {
