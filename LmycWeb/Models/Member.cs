@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace LmycWeb.Models
@@ -11,6 +13,8 @@ namespace LmycWeb.Models
     {
         [Key]
         public string BookingId { get; set; }
+        [JsonIgnore]
+        [IgnoreDataMember]
         public Booking Booking { get; set; }
 
         public int AllocatedCredits { get; set; }
