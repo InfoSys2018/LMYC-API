@@ -55,6 +55,22 @@ namespace LmycWeb.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Contacts",
+                columns: table => new
+                {
+                    ContactId = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: false),
+                    LastName = table.Column<string>(nullable: false),
+                    Other = table.Column<string>(nullable: true),
+                    Subject = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contacts", x => x.ContactId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "EmergencyContacts",
                 columns: table => new
                 {
@@ -140,7 +156,7 @@ namespace LmycWeb.Migrations
                     Credits = table.Column<int>(nullable: false),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
-                    EmergencyContactId = table.Column<string>(nullable: true),
+                    EmergencyContactId = table.Column<string>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     HomePhone = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
@@ -173,7 +189,7 @@ namespace LmycWeb.Migrations
                         column: x => x.EmergencyContactId,
                         principalTable: "EmergencyContacts",
                         principalColumn: "EmergencyContactId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -568,6 +584,9 @@ namespace LmycWeb.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Contacts");
 
             migrationBuilder.DropTable(
                 name: "Documents");
