@@ -30,7 +30,8 @@ namespace LmycWeb.APIControllers
         [HttpGet]
         public IEnumerable<Booking> GetBookings()
         {
-            return _context.Bookings;
+            //return _context.Bookings;
+            return _context.Bookings.Include(b => b.Members);
         }
 
         // GET: api/Bookings/5
