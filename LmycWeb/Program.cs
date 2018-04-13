@@ -28,7 +28,7 @@ namespace LmycWeb
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                context.Database.Migrate();
+                //context.Database.Migrate();
 
                 try
                 {
@@ -47,6 +47,7 @@ namespace LmycWeb
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseUrls("http://localhost:44302/") // hardcoded, change later
                 .Build();
     }
 }

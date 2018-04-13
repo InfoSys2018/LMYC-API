@@ -10,15 +10,13 @@ using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Authorization;
-using AspNet.Security.OAuth.Validation;
 
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Boats")]
+    [Route("api/boats")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class BoatsApiController : Controller
     {
         private readonly ApplicationDbContext _context;

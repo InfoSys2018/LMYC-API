@@ -83,7 +83,7 @@ namespace LmycWeb.Data
                     UserName = "a1",
                     FirstName = "Derek",
                     LastName = "Livington",
-                    MemberStatus = "Full member good standing",
+                    MemberStatus = "Admin",
                     SkipperStatus = "Day skipper",
                     Street = "Fraser Street",
                     City = "Vancouver",
@@ -110,7 +110,7 @@ namespace LmycWeb.Data
                     UserName = "m2",
                     FirstName = "Ryan",
                     LastName = "Smith",
-                    MemberStatus = "Full member not good standing",
+                    MemberStatus = "Admin",
                     SkipperStatus = "Cruise skipper",
                     Street = "East 11th Avenue",
                     City = "Vancouver",
@@ -152,6 +152,12 @@ namespace LmycWeb.Data
             {
                 context.NonMembers.AddRange(DummyData.GetNonMembers(context));
                 context.SaveChanges();
+            }
+
+            if (!context.ClassificationCodes.Any())
+            {
+                context.ClassificationCodes.AddRange(DummyData.GetClassificationCodes(context));
+                await context.SaveChangesAsync();
             }
 
             if (!context.Reports.Any())

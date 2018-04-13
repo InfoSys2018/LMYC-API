@@ -13,7 +13,6 @@ namespace LmycWeb.Controllers
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
         public ReportsController(ApplicationDbContext context)
         {
             _context = context;
@@ -91,7 +90,7 @@ namespace LmycWeb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ReportID,Content,Hours,Approved,DateCreated,Id,CodeId")] Report report)
+        public async Task<IActionResult> Edit(string id, [Bind("ReportID,Content,Hours,Approved,DateCreated,Id,CodeId,UserId")] Report report)
         {
             if (id != report.ReportID)
             {

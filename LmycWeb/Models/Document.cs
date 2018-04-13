@@ -17,8 +17,8 @@ namespace LmycWeb.Models
         [ScaffoldColumn(false)]
         public string ContentType { get; set; }
 
-        public string UserId { get; set; }
-        [ForeignKey("UserId")]
+        public string Id { get; set; }
+        [ForeignKey("Id")]
         public ApplicationUser User { get; set; }
     }
 }

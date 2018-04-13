@@ -14,9 +14,9 @@ using Microsoft.AspNetCore.Cors;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Reports")]
+    [Route("api/reports")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;
