@@ -25,7 +25,6 @@ namespace LmycWeb.Models
         public string City { get; set; }
         public string Province { get; set; }
         [Display(Name = "Postal Code")]
-        [Phone]
         public string PostalCode { get; set; }
         public string Country { get; set; }
         [Display(Name = "Mobile Phone")]
