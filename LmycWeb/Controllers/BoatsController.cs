@@ -60,12 +60,6 @@ namespace LmycWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] BoatViewModel boatViewModel)
         {
-            if (boatViewModel.Photo == null)
-            {
-                ViewBag.PhotoError = "Upload Photo Please";
-                return View(boatViewModel);
-            }
-
             if (ModelState.IsValid)
             {
                 var boat = new Boat
@@ -80,13 +74,20 @@ namespace LmycWeb.Controllers
                     Year = boatViewModel.Year
                 };
 
-                using (var memoryStream = new MemoryStream())
+                if (boatViewModel.Photo == null)
                 {
-                    await boatViewModel.Photo.CopyToAsync(memoryStream);
-                    boat.Photo = memoryStream.ToArray();
+                    string path = Directory.GetCurrentDirectory();
+
+                    boat.Photo = System.IO.File.ReadAllBytes(path + "\\images\\defaultBoat.jpeg");
                 }
-
-
+                else
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await boatViewModel.Photo.CopyToAsync(memoryStream);
+                        boat.Photo = memoryStream.ToArray();
+                    }
+                }
 
                 _context.Add(boat);
                 await _context.SaveChangesAsync();
