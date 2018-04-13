@@ -420,5 +420,35 @@ namespace LmycWeb.Models
             };
             return Reports;
         }
+
+        public static List<EmergencyContact> GetEmergencyContacts(ApplicationDbContext db)
+        {
+            List<EmergencyContact> EmergencyContactList = new List<EmergencyContact>
+            {
+                new EmergencyContact
+                {
+                    Name1 = "Bruce Link",
+                    Phone1 = "604-123-3902",
+                    Name2 = "Chi-En Huang",
+                    Phone2 = "778-293-9382"
+                },
+
+                new EmergencyContact
+                {
+                    Name1 = "Peter Morgan",
+                    Phone1 = "604-321-3502",
+                    Name2 = "Frank Schnurr",
+                    Phone2 = "778-920-2390"
+                },
+                new EmergencyContact
+                {
+                    Name1 = "Richard Chau",
+                    Phone1 = "604-902-28i2",
+                    Name2 = "Keith Tang",
+                    Phone2 = "778-002-2342"
+                }
+            };
+            return EmergencyContactList;
+        }
     }
 }
