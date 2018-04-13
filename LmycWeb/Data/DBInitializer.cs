@@ -47,6 +47,12 @@ namespace LmycWeb.Data
                 await _roleManager.CreateAsync(new IdentityRole("Booking Moderator"));
             }
 
+            if (!context.EmergencyContacts.Any())
+            {
+                context.EmergencyContacts.AddRange(DummyData.GetEmergencyContacts(context));
+                context.SaveChanges();
+            }
+
             //First member.
             if (await _userManager.FindByEmailAsync("m1@m.m") == null)
             {
@@ -69,7 +75,8 @@ namespace LmycWeb.Data
                     SailingQualifications = "None",
                     SailingExperience = "None",
                     Credits = 320,
-                };
+                    EmergencyContactId =  context.EmergencyContacts.FirstOrDefault(e => e.Name1 == "Bruce Link").EmergencyContactId
+            };
                 var result = await _userManager.CreateAsync(member1, "P@$$w0rd");
                 if (result.Succeeded)
                     await _userManager.AddToRoleAsync(member1, "Good Standing Member");
@@ -96,6 +103,7 @@ namespace LmycWeb.Data
                     SailingQualifications = "Sailing Legend",
                     SailingExperience = "Born in the ocean",
                     Credits = 320,
+                    EmergencyContactId = context.EmergencyContacts.FirstOrDefault(e => e.Name1 == "Peter Morgan").EmergencyContactId
                 };
                 var result = await _userManager.CreateAsync(member1, "P@$$w0rd");
                 if (result.Succeeded)
@@ -123,6 +131,7 @@ namespace LmycWeb.Data
                     SailingQualifications = "None",
                     SailingExperience = "None",
                     Credits = 0,
+                    EmergencyContactId = context.EmergencyContacts.FirstOrDefault(e => e.Name1 == "Richard Chau").EmergencyContactId
                 };
                 var result = await _userManager.CreateAsync(member1, "P@$$w0rd");
                 if (result.Succeeded)
