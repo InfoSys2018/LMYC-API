@@ -169,28 +169,28 @@ namespace LmycWeb.APIControllers
         // GET: api/Bookings/5
         [Route("user/{userName}")]
         [HttpGet]
-        public IActionResult GetBookingByUser([FromRoute] string userName)
+        public async Task<IActionResult> GetBookingsByUser([FromRoute] string userName)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var user = _context.Users.SingleOrDefaultAsync(u => u.UserName.Equals(userName));
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName.Equals(userName));
 
             if (user == null)
             {
                 return BadRequest("User not found");
             }
 
-            var booking = _context.Bookings.Where(m => m.UserId.Equals(user.Id));
+            var bookings = await _context.Bookings.Where(m => m.UserId.Equals(user.Id)).ToListAsync();
 
-            if (booking == null)
+            if (bookings == null)
             {
                 return NotFound();
             }
 
-            return Ok(booking);
+            return Ok(bookings);
         }
 
 
@@ -438,17 +438,38 @@ namespace LmycWeb.APIControllers
                 return BadRequest(ModelState);
             }
 
-            var booking = await _context.Bookings.SingleOrDefaultAsync(m => m.BookingId == id);
+            var booking = await _context.Bookings.Include(m => m.Members).Include(m => m.NonMembers).SingleOrDefaultAsync(m => m.BookingId == id);
             if (booking == null)
             {
                 return NotFound();
             }
+            RefundBookingMemberCredits(booking.Members);
+            //if (booking.Members != null)
+            //{
+            //    //Drop the old members from the db
+            //    bool dropMembersResult = await RemoveOldMembersAsync(booking.BookingId);
 
+            //    if (!dropMembersResult)
+            //    {
+            //        return BadRequest("unable to drop old members.");
+            //    }
+
+            //}
+
+            //if (booking.NonMembers != null)
+            //{
+            //    //Drop the old non members from the db
+            //    bool dropNonMembersResult = await RemoveOldNonMembersAsync(booking.BookingId);
+
+            //    if (!dropNonMembersResult)
+            //    {
+            //        return BadRequest("unable to drop old non members.");
+            //    }
+            //}
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
 
-            RefundBookingMemberCredits(booking.Members);
-
+  
             return Ok(booking);
         }
 
@@ -775,9 +796,9 @@ namespace LmycWeb.APIControllers
         }
 
 
-        public async Task<bool> RemoveOldMembersAsync(List<Member> members, string bookingId)
+        public async Task<bool> RemoveOldMembersAsync(string bookingId)
         {
-
+            var members = _context.Members.Where(m => m.BookingId == bookingId);
             foreach (var member in members)
             {
                 var curMember = await _context.Members.Where(m => m.BookingId.Equals(bookingId)).SingleOrDefaultAsync(m => m.UserId.Equals(member.UserId));
@@ -792,8 +813,10 @@ namespace LmycWeb.APIControllers
             return true;
         }
 
-        public async Task<bool> RemoveOldNonMembersAsync(List<NonMember> members, string bookingId)
+        public async Task<bool> RemoveOldNonMembersAsync(string bookingId)
         {
+            var members = _context.NonMembers.Where(m => m.BookingId == bookingId);
+
             foreach (var member in members)
             {
                 var curMember = await _context.NonMembers.Where(m => m.BookingId.Equals(bookingId)).SingleOrDefaultAsync(m => m.NonMemberId.Equals(member.NonMemberId));
