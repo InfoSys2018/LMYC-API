@@ -136,11 +136,7 @@ namespace LmycWeb.Controllers
             {
                 return NotFound();
             }
-            if (boatViewModel.Photo == null)
-            {
-                ViewBag.PhotoError = "Upload Photo Please";
-                return View(boatViewModel);
-            }
+            
             if (ModelState.IsValid)
             {
                 try
@@ -157,6 +153,20 @@ namespace LmycWeb.Controllers
                     boat.Year = boatViewModel.Year;
 
 
+                    if (boatViewModel.Photo == null)
+                    {
+                        
+                        if (boat.Photo != null)
+                        {
+                            boat.Photo = boat.Photo;
+                        } else
+                        {
+                            ViewBag.PhotoError = "Upload Photo Please";
+                            return View(boatViewModel);
+                        }
+                    }
+
+
                     if (boatViewModel.Photo != null)
                     {
                         using (var memoryStream = new MemoryStream())
@@ -166,6 +176,7 @@ namespace LmycWeb.Controllers
                         }
                     }
 
+                    
                     _context.Update(boat);
                     await _context.SaveChangesAsync();
                 }

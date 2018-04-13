@@ -47,7 +47,7 @@ namespace LmycWeb
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://localhost:44302/") // hardcoded, change later
+                .UseUrls("http://localhost:44302") // hardcoded, change later
                 .Build();
     }
 }
