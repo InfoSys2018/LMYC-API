@@ -118,6 +118,14 @@ namespace LmycWeb.APIControllers
             {
                 return BadRequest("Boat does not exist given ID!");
             }
+            else if (!IsValidDateRange(startTime, selectedDate))
+            {
+                return BadRequest("Start date cannot be after end date!");
+            }
+            else if (!IsValidTimeSpan(startTime, selectedDate))
+            {
+                return BadRequest("Bookings cannot be more than 3 days");
+            }
 
             DateTime maxDate = selectedDate.AddDays(3);
 
@@ -282,7 +290,7 @@ namespace LmycWeb.APIControllers
             booking.CreditsUsed = (int) CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
 
             //Check if the booking requires credits
-            if (booking.CreditsUsed != 0)
+            else if (booking.CreditsUsed != 0)
             {
                 bool result = await CheckMembersHaveEnoughCreditsAsync(booking.Members);
 
@@ -290,6 +298,18 @@ namespace LmycWeb.APIControllers
                 {
                     return BadRequest("A member does not have enough credits");
                 }
+            }
+            else if (!IsValidDateRange(booking.StartDateTime, booking.EndDateTime))
+            {
+                return BadRequest("Start date cannot be after end date!");
+            }
+            else if (!IsValidTimeSpan(booking.StartDateTime, booking.EndDateTime))
+            {
+                return BadRequest("Bookings cannot be more than 3 days");
+            }
+            else if (!IsValidBookingDateRange(booking.BoatId, booking.StartDateTime, booking.EndDateTime).Result)
+            {
+                return BadRequest("Date has been previously reserved");
             }
 
             //Check skipper status of members
@@ -641,6 +661,27 @@ namespace LmycWeb.APIControllers
             }
 
             return list;
+        }
+
+        private Boolean IsValidDateRange(DateTime startTime, DateTime endTime)
+        {
+            return endTime > startTime;
+        }
+
+        private Boolean IsValidTimeSpan(DateTime startTime, DateTime endTime)
+        {
+            TimeSpan diff = endTime.Subtract(startTime);
+
+            return (int)diff.TotalHours <= 72;
+        }
+
+        private async Task<Boolean> IsValidBookingDateRange(string boatId, DateTime startTime, DateTime endTime)
+        {
+            DateTime nextStartDate = await _context.Bookings.Where(d => d.StartDateTime > startTime
+                && d.BoatId == boatId && d.StartDateTime < endTime)
+                .Select(s => s.StartDateTime).FirstOrDefaultAsync();
+
+            return nextStartDate == null;
         }
 
     }
