@@ -45,6 +45,7 @@ namespace LmycWeb.APIControllers
             
             var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
             var emergencyContacts = await _context.EmergencyContacts.SingleOrDefaultAsync(c => c.EmergencyContactId == applicationUser.EmergencyContactId);
+
             applicationUser.EmergencyContacts.Name1 = emergencyContacts.Name1;
             applicationUser.EmergencyContacts.Phone1 = emergencyContacts.Phone1;
             applicationUser.EmergencyContacts.Name2 = emergencyContacts.Name2;
@@ -59,7 +60,7 @@ namespace LmycWeb.APIControllers
         }
 
         // PUT: api/ApplicationUsers/5
-        [HttpPut("{id}")]
+        [HttpPut("{username}")]
         public async Task<IActionResult> PutApplicationUser([FromRoute] string username, [FromBody] ApplicationUser applicationUser)
         {
             var user = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
@@ -75,7 +76,27 @@ namespace LmycWeb.APIControllers
                 return BadRequest();
             }
 
-            _context.Entry(applicationUser).State = EntityState.Modified;
+            user.FirstName = applicationUser.FirstName;
+            user.LastName = applicationUser.LastName;
+            user.HomePhone = applicationUser.HomePhone;
+            user.MobilePhone = applicationUser.MobilePhone;
+            user.WorkPhone = applicationUser.WorkPhone;
+            user.Email = applicationUser.Email;
+
+            user.SailingExperience = applicationUser.SailingExperience;
+            user.SailingQualifications = applicationUser.SailingQualifications;
+            user.Skills = applicationUser.Skills;
+
+            if (user.EmergencyContacts == null)
+                user.EmergencyContacts = new EmergencyContact();
+
+            user.EmergencyContacts.Name1 = applicationUser.EmergencyContacts.Name1;
+            user.EmergencyContacts.Name2 = applicationUser.EmergencyContacts.Name2;
+            user.EmergencyContacts.Phone1 = applicationUser.EmergencyContacts.Phone1;
+            user.EmergencyContacts.Phone2 = applicationUser.EmergencyContacts.Phone2;
+            
+
+            _context.Entry(user).State = EntityState.Modified;
 
             try
             {
