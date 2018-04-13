@@ -226,11 +226,29 @@ namespace LmycWeb.APIControllers
 
             //Refund old charges then Charge the newly allocated credits to each user 
             //if there is any credits to be charged
+
+            var oldBooking = await _context.Bookings.SingleOrDefaultAsync(m => m.BookingId == id);
+            RefundBookingMemberCredits(oldBooking.Members);
+
             if (booking.CreditsUsed != 0)
             {
-                var oldBooking = await _context.Bookings.SingleOrDefaultAsync(m => m.BookingId == id);
-                RefundBookingMemberCredits(oldBooking.Members);
                 ChargeBookingMemberCredits(booking.Members);
+            }
+
+            //Drop the old members from the db
+            bool dropMembersResult = await RemoveOldMembersAsync(oldBooking.Members);
+
+            if (!dropMembersResult)
+            {
+                return BadRequest("unable to drop old members.");
+            }
+
+            //Drop the old non members from the db
+            bool dropNonMembersResult = await RemoveOldNonMembersAsync(oldBooking.NonMembers);
+
+            if (!dropNonMembersResult)
+            {
+                return BadRequest("unable to drop old non members.");
             }
 
             _context.Entry(booking).State = EntityState.Modified;
@@ -644,5 +662,36 @@ namespace LmycWeb.APIControllers
             return list;
         }
 
+        public async Task<bool> RemoveOldMembersAsync(List<Member> members)
+        {
+            foreach (var member in members)
+            {
+                var curMember = await _context.Members.SingleOrDefaultAsync(m => m.UserId.Equals(member.UserId));
+                if (curMember == null)
+                {
+                    return false;
+                }
+                _context.Members.Remove(curMember);
+                
+            }
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveOldNonMembersAsync(List<NonMember> members)
+        {
+            foreach (var member in members)
+            {
+                var curMember = await _context.NonMembers.SingleOrDefaultAsync(m => m.NonMemberId.Equals(member.NonMemberId));
+                if (curMember == null)
+                {
+                    return false;
+                }
+                _context.NonMembers.Remove(curMember);
+
+            }
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
