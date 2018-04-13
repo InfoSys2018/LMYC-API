@@ -9,16 +9,16 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-action="ViewAll">View All Reports</a>
+    <a asp-action="Index">View Unapproved</a>
+
 </p>
-    @using (Html.BeginForm())
+@using (Html.BeginForm())
 {
 <p>
     Find by username: @Html.TextBox("SearchString")
     <input type="submit" value="Search" />
 </p>
 }
-
 <table class="table">
     <thead>
         <tr>
@@ -46,35 +46,35 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Content)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Hours)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Approved)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateCreated)
-                </td>
-                <td>
-                    @{
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Content)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hours)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Approved)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateCreated)
+            </td>
+            <td>
+                @{
                         ApplicationUser user = await @UserManager.FindByIdAsync(item.UserId);
                         var userName = user.UserName;
-                     }
-                        @userName
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CodeId)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ReportID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ReportID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ReportID">Delete</a>
-                </td>
-            </tr>
+                }
+                @userName
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CodeId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ReportID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ReportID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ReportID">Delete</a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
