@@ -11,8 +11,8 @@ using System;
 namespace LmycWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180412002551_initial")]
-    partial class initial
+    [Migration("20180413045230_Initial DB")]
+    partial class InitialDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -183,11 +183,11 @@ namespace LmycWeb.Migrations
 
                     b.Property<string>("DocumentName");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("Id");
 
                     b.HasKey("DocumentId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Id");
 
                     b.ToTable("Documents");
                 });
@@ -533,7 +533,7 @@ namespace LmycWeb.Migrations
                 {
                     b.HasOne("LmycWeb.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("Id");
                 });
 
             modelBuilder.Entity("LmycWeb.Models.Member", b =>
@@ -563,7 +563,7 @@ namespace LmycWeb.Migrations
                         .HasForeignKey("CodeId");
 
                     b.HasOne("LmycWeb.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Reports")
                         .HasForeignKey("UserId");
                 });
 
