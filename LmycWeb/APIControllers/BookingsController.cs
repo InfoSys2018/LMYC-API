@@ -351,6 +351,10 @@ namespace LmycWeb.APIControllers
                 return BadRequest(ModelState);
             }
 
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == booking.UserId);
+            var userId = user.Id;
+            booking.UserId = userId;
+
             //Check the member status of the user creating the booking
             bool goodStandingResult = await FullMemberGoodStatusCheckAsync(booking.UserId);
 
