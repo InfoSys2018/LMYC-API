@@ -352,6 +352,10 @@ namespace LmycWeb.APIControllers
                 return BadRequest(ModelState);
             }
 
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == booking.UserId);
+            var userId = user.Id;
+            booking.UserId = userId;
+
             //Check the member status of the user creating the booking
             bool goodStandingResult = await FullMemberGoodStatusCheckAsync(booking.UserId);
 
@@ -759,7 +763,7 @@ namespace LmycWeb.APIControllers
         {
             var boat = await _context.Boats.SingleOrDefaultAsync(b => b.BoatId.Equals(boatId));
 
-            if (boat.Status.Equals("Operational"))
+            if (boat.Status.Equals("Operational", StringComparison.InvariantCultureIgnoreCase))
             {
                 return true;
             }
