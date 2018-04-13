@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace LmycWeb.Migrations
 {
-    public partial class initial : Migration
+    public partial class InitialDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -52,6 +52,22 @@ namespace LmycWeb.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClassificationCodes", x => x.CodeId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Contacts",
+                columns: table => new
+                {
+                    ContactId = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: false),
+                    LastName = table.Column<string>(nullable: false),
+                    Other = table.Column<string>(nullable: true),
+                    Subject = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contacts", x => x.ContactId);
                 });
 
             migrationBuilder.CreateTable(
@@ -140,7 +156,7 @@ namespace LmycWeb.Migrations
                     Credits = table.Column<int>(nullable: false),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
-                    EmergencyContactId = table.Column<string>(nullable: true),
+                    EmergencyContactId = table.Column<string>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     HomePhone = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
@@ -173,7 +189,7 @@ namespace LmycWeb.Migrations
                         column: x => x.EmergencyContactId,
                         principalTable: "EmergencyContacts",
                         principalColumn: "EmergencyContactId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -322,14 +338,14 @@ namespace LmycWeb.Migrations
                     Content = table.Column<byte[]>(nullable: true),
                     ContentType = table.Column<string>(nullable: true),
                     DocumentName = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
+                    Id = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Documents", x => x.DocumentId);
                     table.ForeignKey(
-                        name: "FK_Documents_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Documents_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -498,9 +514,9 @@ namespace LmycWeb.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Documents_UserId",
+                name: "IX_Documents_Id",
                 table: "Documents",
-                column: "UserId");
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NonMembers_BookingId",
@@ -568,6 +584,9 @@ namespace LmycWeb.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Contacts");
 
             migrationBuilder.DropTable(
                 name: "Documents");

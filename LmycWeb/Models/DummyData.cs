@@ -307,31 +307,37 @@ namespace LmycWeb.Models
             {
                 new ClassificationCode
                 {
+                    CodeId = "Boat Main - Hard",
                     Classification = "Boat Maint - Hard"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Boat Maint - Monthly",
                     Classification = "Boat Maint - Monthly"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Training - Cruiser Skipper",
                     Classification = "Training - Cruise Skipper"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Training - Day Skipper",
                     Classification = "Training - Day Skipper"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Executive",
                     Classification = "Executive"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Winter Watch",
                     Classification = "Winter Watch"
                 }
             };
@@ -413,6 +419,36 @@ namespace LmycWeb.Models
                 }
             };
             return Reports;
+        }
+
+        public static List<EmergencyContact> GetEmergencyContacts(ApplicationDbContext db)
+        {
+            List<EmergencyContact> EmergencyContactList = new List<EmergencyContact>
+            {
+                new EmergencyContact
+                {
+                    Name1 = "Bruce Link",
+                    Phone1 = "604-123-3902",
+                    Name2 = "Chi-En Huang",
+                    Phone2 = "778-293-9382"
+                },
+
+                new EmergencyContact
+                {
+                    Name1 = "Peter Morgan",
+                    Phone1 = "604-321-3502",
+                    Name2 = "Frank Schnurr",
+                    Phone2 = "778-920-2390"
+                },
+                new EmergencyContact
+                {
+                    Name1 = "Richard Chau",
+                    Phone1 = "604-902-28i2",
+                    Name2 = "Keith Tang",
+                    Phone2 = "778-002-2342"
+                }
+            };
+            return EmergencyContactList;
         }
     }
 }
