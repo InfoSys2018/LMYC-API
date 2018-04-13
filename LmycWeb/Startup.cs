@@ -27,18 +27,17 @@ namespace LmycWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+
             // Add service and create Policy with options
             services.AddCors(options => {
                 options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
+                    builder => builder.WithOrigins("http://localhost:4200")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials());
+                    .AllowCredentials().Build());
             });
 
-            services.AddMvc();
-
-            
             services.AddDbContext<ApplicationDbContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
 
@@ -107,9 +106,9 @@ namespace LmycWeb
 
             app.UseStaticFiles();
 
-            app.UseAuthentication();
-
             app.UseCors("CorsPolicy");
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
