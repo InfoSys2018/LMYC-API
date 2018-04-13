@@ -54,29 +54,29 @@ namespace XUnitTestProject1
             Assert.IsType<NotFoundResult>(result.Result);
         }
 
-        [Fact]
-        public void PutProject_WhenModelStateIsInvalid()
-        {
-            var controller = new BoatsApiController(null);
-            controller.ModelState.AddModelError("key", "message");
-            var result = controller.PutBoat(null, null);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-            Assert.IsType<SerializableError>(badRequestResult.Value);
-        }
+        //[Fact]
+        //public void PutProject_WhenModelStateIsInvalid()
+        //{
+        //    var controller = new BoatsApiController(null);
+        //    controller.ModelState.AddModelError("key", "message");
+        //    var result = controller.PutBoat(null, null);
+        //    var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+        //    Assert.IsType<SerializableError>(badRequestResult.Value);
+        //}
 
-        [Fact]
-        public void PutBoat_WhenIdDoesNotMatchProjectNumber()
-        {
-            string id = "abc123";
-            var Boat = testBoats[0];
-            var controller = new BoatsApiController(null);
-            int code = 400;
+        //[Fact]
+        //public void PutBoat_WhenIdDoesNotMatchProjectNumber()
+        //{
+        //    string id = "abc123";
+        //    var Boat = testBoats[0];
+        //    var controller = new BoatsApiController(null);
+        //    int code = 400;
 
-            var result = controller.PutBoat(id, Boat);
+        //    var result = controller.PutBoat(id, Boat);
 
-            var badRequestResult = Assert.IsType<BadRequestResult>(result.Result);
-            Assert.Equal(code, badRequestResult.StatusCode);
-        }
+        //    var badRequestResult = Assert.IsType<BadRequestResult>(result.Result);
+        //    Assert.Equal(code, badRequestResult.StatusCode);
+        //}
 
         //[Fact(Skip = "Incomplete: mock dbcontext.Entry()")]
         //[Fact]
@@ -95,32 +95,32 @@ namespace XUnitTestProject1
         //    Assert.IsType<NoContentResult>(result);
         //}
 
-        [Fact]
-        public void PostBoat_WhenModelStateIsInvalid()
-        {
-            Boat project = testBoats[0];
-            var controller = new BoatsApiController(null);
-            controller.ModelState.AddModelError("key", "message");
+        //[Fact]
+        //public void PostBoat_WhenModelStateIsInvalid()
+        //{
+        //    Boat project = testBoats[0];
+        //    var controller = new BoatsApiController(null);
+        //    controller.ModelState.AddModelError("key", "message");
 
-            var result = controller.PostBoat(project);
+        //    var result = controller.PostBoat(project);
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-            Assert.IsType<SerializableError>(badRequestResult.Value);
-        }
+        //    var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+        //    Assert.IsType<SerializableError>(badRequestResult.Value);
+        //}
 
-        [Fact]
-        public void PostBoat_Successful()
-        {
-            Boat project = testBoats[0];
-            var dbContext = new Mock<IDbContext>();
-            var mockList = MockDbSet(testBoats);
-            dbContext.Setup(x => x.Boats).Returns(mockList.Object);
-            var controller = new BoatsApiController(dbContext.Object);
+        //[Fact]
+        //public void PostBoat_Successful()
+        //{
+        //    Boat project = testBoats[0];
+        //    var dbContext = new Mock<IDbContext>();
+        //    var mockList = MockDbSet(testBoats);
+        //    dbContext.Setup(x => x.Boats).Returns(mockList.Object);
+        //    var controller = new BoatsApiController(dbContext.Object);
 
-            var result = controller.PostBoat(project);
+        //    var result = controller.PostBoat(project);
 
-            Assert.IsType<CreatedAtActionResult>(result.Result);
-        }
+        //    Assert.IsType<CreatedAtActionResult>(result.Result);
+        //}
 
 
         /* Helper methods and sample data */
