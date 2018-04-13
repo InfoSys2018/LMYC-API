@@ -42,6 +42,8 @@ namespace LmycWeb.Models
         [Display(Name = "Sailing Experience")]
         public string SailingExperience { get; set; }
         public int Credits { get; set; }
+
+        [Required]
         public string EmergencyContactId { get; set; }
         public EmergencyContact EmergencyContacts { get; set; }
         public List<Booking> Bookings { get; set; }
