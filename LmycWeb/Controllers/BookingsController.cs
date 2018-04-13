@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LmycWeb.Controllers
 {
-    [Authorize (Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class BookingsController : Controller
     {
         private readonly ApplicationDbContext _context;
