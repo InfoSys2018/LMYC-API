@@ -57,8 +57,11 @@ namespace LmycWeb.APIControllers
 
         // PUT: api/ApplicationUsers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutApplicationUser([FromRoute] string id, [FromBody] ApplicationUser applicationUser)
+        public async Task<IActionResult> PutApplicationUser([FromRoute] string username, [FromBody] ApplicationUser applicationUser)
         {
+            var user = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
+            var id = user.Id;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
