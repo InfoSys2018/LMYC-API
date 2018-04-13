@@ -15,7 +15,7 @@ namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/applicationusers")]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     public class ApplicationUsersController : Controller
     {
