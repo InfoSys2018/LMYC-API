@@ -60,6 +60,12 @@ namespace LmycWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] BoatViewModel boatViewModel)
         {
+            if (boatViewModel.Photo == null)
+            {
+                ViewBag.PhotoError = "Upload Photo Please";
+                return View(boatViewModel);
+            }
+
             if (ModelState.IsValid)
             {
                 var boat = new Boat
@@ -130,7 +136,11 @@ namespace LmycWeb.Controllers
             {
                 return NotFound();
             }
-
+            if (boatViewModel.Photo == null)
+            {
+                ViewBag.PhotoError = "Upload Photo Please";
+                return View(boatViewModel);
+            }
             if (ModelState.IsValid)
             {
                 try
