@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using LmycWeb.Interfaces;
 
 namespace LmycWeb.APIControllers
 {
@@ -14,9 +15,9 @@ namespace LmycWeb.APIControllers
     [Route("api/Contacts")]
     public class ContactsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContext _context;
 
-        public ContactsController(ApplicationDbContext context)
+        public ContactsController(IDbContext context)
         {
             _context = context;
         }
