@@ -21,10 +21,49 @@ namespace LmycWeb.Controllers
         }
 
         // GET: Reports
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string searchString)
         {
-            var ApplicationDbContext = _context.Reports.Include(r => r.Code).Where(r => !r.Approved);
-            return View(await ApplicationDbContext.ToListAsync());
+            List<Report> Reports;
+            if (String.IsNullOrEmpty(searchString))
+            {
+                Reports = _context.Reports.Include(r => r.Code).Where(r => !r.Approved).ToList();
+            }
+            else
+            {
+                var user = _context.ApplicationUser.FirstOrDefault(u => u.UserName == searchString);
+                try
+                {
+                    Reports = _context.Reports.Include(r => r.Code).Where(r => !r.Approved
+                && r.UserId == user.Id).ToList();
+                }
+                catch (Exception)
+                {
+                    Reports = _context.Reports.Include(r => r.Code).Where(r => !r.Approved).ToList();
+                }
+            }
+            return View(Reports);
+        }
+
+        public async Task<IActionResult> ViewAll(string searchString)
+        {
+            List<Report> Reports;
+            if (String.IsNullOrEmpty(searchString))
+            {
+                Reports = await _context.Reports.Include(r => r.Code).ToListAsync();
+            }
+            else
+            {
+                var user = _context.ApplicationUser.FirstOrDefault(u => u.UserName == searchString);
+                try
+                {
+                    Reports = await _context.Reports.Include(r => r.Code).Where(r => r.UserId == user.Id).ToListAsync();
+                }
+                catch (Exception)
+                {
+                    Reports = await _context.Reports.Include(r => r.Code).ToListAsync();
+                }
+            }
+            return View (Reports);
         }
 
         // GET: Reports/Details/5
