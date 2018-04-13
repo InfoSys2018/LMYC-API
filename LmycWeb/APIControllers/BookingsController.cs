@@ -169,28 +169,28 @@ namespace LmycWeb.APIControllers
         // GET: api/Bookings/5
         [Route("user/{userName}")]
         [HttpGet]
-        public IActionResult GetBookingByUser([FromRoute] string userName)
+        public async Task<IActionResult> GetBookingsByUser([FromRoute] string userName)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var user = _context.Users.SingleOrDefaultAsync(u => u.UserName.Equals(userName));
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName.Equals(userName));
 
             if (user == null)
             {
                 return BadRequest("User not found");
             }
 
-            var booking = _context.Bookings.Where(m => m.UserId.Equals(user.Id));
+            var bookings = await _context.Bookings.Where(m => m.UserId.Equals(user.Id)).ToListAsync();
 
-            if (booking == null)
+            if (bookings == null)
             {
                 return NotFound();
             }
 
-            return Ok(booking);
+            return Ok(bookings);
         }
 
 

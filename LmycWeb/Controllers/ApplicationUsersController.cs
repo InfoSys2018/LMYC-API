@@ -31,7 +31,6 @@ namespace LmycWeb.Controllers
         {
 
             var users = _context.ApplicationUser.Include(a => a.EmergencyContacts);
-
             foreach (var user in users)
             {
                 user.TotalHours = _context.Reports.Where(r => r.UserId == user.Id).Sum(r => r.Hours);

@@ -10,17 +10,22 @@ namespace LmycWeb.Models
     {
         [Key]
         public string BoatId { get; set; }
+        [Required]
         [Display(Name = "Boat Name")]
         public string Name { get; set; }
+        [Required]
         [Display(Name="Credits Per Hour")]
         public int CreditsPerHour { get; set; }
+        [Required]
         public string Status { get; set; }
         public byte[] Photo { get; set; }
         public string Description { get; set; }
+        [Required]
         public int Length { get; set; }
+        [Required]
         public string Make { get; set; }
+        [Required]
         public int Year { get; set; }
-
         public List<Booking> Bookings { get; set; }
     }
 }
