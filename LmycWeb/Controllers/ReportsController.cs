@@ -23,7 +23,7 @@ namespace LmycWeb.Controllers
         // GET: Reports
         public async Task<IActionResult> Index()
         {
-            var ApplicationDbContext = _context.Reports.Include(r => r.Code);
+            var ApplicationDbContext = _context.Reports.Include(r => r.Code).Where(r => !r.Approved);
             return View(await ApplicationDbContext.ToListAsync());
         }
 
@@ -50,6 +50,7 @@ namespace LmycWeb.Controllers
         public IActionResult Create()
         {
             ViewData["CodeId"] = new SelectList(_context.Set<ClassificationCode>(), "CodeId", "CodeId");
+            ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "UserName");
             return View();
         }
 
@@ -58,7 +59,7 @@ namespace LmycWeb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ReportID,Content,Hours,Approved,DateCreated,Id,CodeId")] Report report)
+        public async Task<IActionResult> Create([Bind("ReportID,Content,Hours,Approved,DateCreated,Id,UserId,CodeId")] Report report)
         {
             if (ModelState.IsValid)
             {
@@ -67,6 +68,7 @@ namespace LmycWeb.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CodeId"] = new SelectList(_context.Set<ClassificationCode>(), "CodeId", "CodeId", report.CodeId);
+            ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "UserName", report.UserId);
             return View(report);
         }
 
@@ -84,6 +86,7 @@ namespace LmycWeb.Controllers
                 return NotFound();
             }
             ViewData["CodeId"] = new SelectList(_context.Set<ClassificationCode>(), "CodeId", "CodeId", report.CodeId);
+            ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "UserName", report.UserId);
             return View(report);
         }
 
@@ -92,7 +95,8 @@ namespace LmycWeb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ReportID,Content,Hours,Approved,DateCreated,Id,CodeId")] Report report)
+        public async Task<IActionResult> Edit(string id, [Bind("ReportID,Content,Hours,Approved,DateCreated,Id,UserId,CodeId")] Report report)
+
         {
             if (id != report.ReportID)
             {
@@ -120,6 +124,7 @@ namespace LmycWeb.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CodeId"] = new SelectList(_context.Set<ClassificationCode>(), "CodeId", "CodeId", report.CodeId);
+            ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "UserName", report.UserId);
             return View(report);
         }
 

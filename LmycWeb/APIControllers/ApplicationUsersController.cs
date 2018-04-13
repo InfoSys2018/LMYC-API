@@ -15,8 +15,7 @@ namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/applicationusers")]
-    [EnableCors("AllowAllOrigins")]
-    [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+    [EnableCors("CorsPolicy")]
     public class ApplicationUsersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -34,15 +33,21 @@ namespace LmycWeb.APIControllers
         }
 
         // GET: api/ApplicationUsers/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetApplicationUser([FromRoute] string id)
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetApplicationUser([FromRoute] string username)
         {
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.Id == id);
+            
+            var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
+            var emergencyContacts = await _context.EmergencyContacts.SingleOrDefaultAsync(c => c.EmergencyContactId == applicationUser.EmergencyContactId);
+            applicationUser.EmergencyContacts.Name1 = emergencyContacts.Name1;
+            applicationUser.EmergencyContacts.Phone1 = emergencyContacts.Phone1;
+            applicationUser.EmergencyContacts.Name2 = emergencyContacts.Name2;
+            applicationUser.EmergencyContacts.Phone2 = emergencyContacts.Phone2;
 
             if (applicationUser == null)
             {
