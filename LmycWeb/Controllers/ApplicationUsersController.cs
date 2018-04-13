@@ -41,6 +41,7 @@ namespace LmycWeb.Controllers
             var applicationUser = await _context.ApplicationUser
                 .Include(a => a.EmergencyContacts)
                 .SingleOrDefaultAsync(m => m.Id == id);
+
             if (applicationUser == null)
             {
                 return NotFound();
@@ -102,7 +103,7 @@ namespace LmycWeb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         //[Bind("FirstName,LastName,MemberStatus,SkipperStatus,Street,City,Province,PostalCode,Country,MobilePhone,HomePhone,WorkPhone,SailingQualifications,Skills,SailingExperience,Credits,EmergencyContact,Id,UserName,Email")]
-        public async Task<IActionResult> Edit(string id, UserViewModel userViewModel, ApplicationUser applicationUser)
+        public async Task<IActionResult> Edit(string id, ApplicationUser applicationUser)
         {
             if (id != applicationUser.Id)
             {
@@ -117,7 +118,27 @@ namespace LmycWeb.Controllers
                     //var updatedUser = _context.Users.SingleOrDefault(x => x.Id == userViewModel.Id);
                     //await this._userManager.AddToRoleAsync(updatedUser, userViewModel.Role);
 
-                    _context.Update(applicationUser);
+                    var user = _context.ApplicationUser.Find(id);
+
+                    user.UserName = applicationUser.UserName;
+                    user.Email = applicationUser.Email;
+                    user.FirstName = applicationUser.FirstName;
+                    user.LastName = applicationUser.LastName;
+                    user.MemberStatus = applicationUser.MemberStatus;
+                    user.SkipperStatus = applicationUser.SkipperStatus;
+                    user.Street = applicationUser.Street;
+                    user.Province = applicationUser.Province;
+                    user.Country = applicationUser.Country;
+                    user.MobilePhone = applicationUser.MobilePhone;
+                    user.WorkPhone = applicationUser.WorkPhone;
+                    user.SailingQualifications = applicationUser.SailingQualifications;
+                    user.Skills = applicationUser.Skills;
+                    user.SailingExperience = applicationUser.SailingExperience;
+                    user.Credits = applicationUser.Credits;
+                    user.EmergencyContacts = applicationUser.EmergencyContacts;
+
+                    _context.Update(user);
+
                     await _context.SaveChangesAsync();
 
 
@@ -139,36 +160,6 @@ namespace LmycWeb.Controllers
             }
            
             return View(applicationUser);
-        }
-
-        // GET: ApplicationUsers/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var applicationUser = await _context.ApplicationUser
-                .Include(a => a.EmergencyContacts)
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (applicationUser == null)
-            {
-                return NotFound();
-            }
-
-            return View(applicationUser);
-        }
-
-        // POST: ApplicationUsers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.Id == id);
-            _context.ApplicationUser.Remove(applicationUser);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool ApplicationUserExists(string id)

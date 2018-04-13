@@ -28,7 +28,7 @@ namespace LmycWeb
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                context.Database.Migrate();
+                //context.Database.Migrate();
 
                 try
                 {
