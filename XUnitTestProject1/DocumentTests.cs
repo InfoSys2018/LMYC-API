@@ -42,22 +42,6 @@ namespace XUnitTestProject1
             Assert.IsType<SerializableError>(badRequestResult.Value);
         }
 
-        ////[Fact(Skip = "Issue with SingleOrDefaultAsync call")]
-        //public void GetDocumet_WhenDocumentNotFound()
-        //{
-        //    string documentId = "x";
-        //    var dbContext = new Mock<IDbContext>();
-        //    var ISContext = new Mock<IServiceProvider>();
-        //    var mockList = MockDbSet(testDocuments);
-        //    dbContext.Setup(c => c.Documents).Returns(mockList.Object);
-
-        //    var controller = new DocumentsAPIController(dbContext.Object, ISContext.Object);
-
-        //    var result = controller.GetDocument(documentId);
-
-        //    Assert.IsType<NotFoundResult>(result.Result);
-        //}
-
         [Fact]
         public void PutDocument_WhenModelStateIsInvalid()
         {
@@ -86,22 +70,6 @@ namespace XUnitTestProject1
             Assert.Equal(code, badRequestResult.StatusCode);
         }
 
-        //[Fact(Skip = "Incomplete: mock dbcontext.Entry()")]
-        //[Fact]
-        //public async Task PutBoat()
-        //{
-        //    string id = "B01";
-        //    var boat = testBoats[0];
-
-        //    var dbContext = new Mock<IDbContext>();
-        //    //var mockList = MockDbSet(testBoats);
-        //    var mockList = Helpers.ToAsyncDbSetMock(testBoats);
-        //    dbContext.Setup(c => c.Boats).Returns(mockList.Object);
-        //    var controller = new BoatsApiController(dbContext.Object);
-
-        //    var result = controller.PutBoat(id, boat);
-        //    Assert.IsType<NoContentResult>(result);
-        //}
 
         [Fact]
         public void PostDocument_WhenModelStateIsInvalid()

@@ -1,4 +1,5 @@
 ﻿using LmycWeb.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace LmycWeb.Interfaces
 {
         public interface IDbContext
-        {
+    {
             DbSet<Boat> Boats { get; set; }
             DbSet<Document> Documents { get; set; }
             DbSet<Report> Reports { get; set; }
@@ -20,7 +21,7 @@ namespace LmycWeb.Interfaces
             DbSet<Member> Members { get; set; }
             DbSet<NonMember> NonMembers { get; set; }
             DbSet<LmycWeb.Models.ApplicationUser> ApplicationUser { get; set; }
-        
+            DbSet<Contact> Contacts { get; set; }
 
         int SaveChanges();
             Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
