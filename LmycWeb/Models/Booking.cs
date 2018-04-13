@@ -11,8 +11,11 @@ namespace LmycWeb.Models
     {
         [Key]
         public string BookingId { get; set; }
+        [Required]
         public DateTime StartDateTime { get; set; }
+        [Required]
         public DateTime EndDateTime { get; set; }
+        [Required]
         public int CreditsUsed { get; set; }
 
         public string BoatId { get; set; }
