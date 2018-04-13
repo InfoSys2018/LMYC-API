@@ -1,4 +1,5 @@
-﻿@model LmycWeb.Models.Report
+﻿@inject UserManager<ApplicationUser> UserManager
+@model LmycWeb.Models.Report
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,7 +7,13 @@
 
 <h2>Edit</h2>
 
-<h4>Report</h4>
+<h4>
+    Report for @{
+        ApplicationUser user = await @UserManager.FindByIdAsync(Model.UserId);
+        var userName = user.UserName;
+    }
+    @userName
+</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -37,7 +44,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="UserId" class="control-label"></label>
-                <input asp-for="UserId" class="form-control" />
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
                 <span asp-validation-for="UserId" class="text-danger"></span>
             </div>
             <div class="form-group">
