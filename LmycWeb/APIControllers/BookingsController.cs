@@ -67,10 +67,10 @@ namespace LmycWeb.APIControllers
             DateTime endTime = selectedDate;
             endTime = endTime.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
 
-            List<DateTime> startList = await _context.Bookings.Where(d => d.StartDateTime >= selectedDate 
+            List<DateTime> startList = await _context.Bookings.Where(d => d.StartDateTime >= selectedDate
                 && d.StartDateTime <= endTime && d.BoatId == boatId).Select(s => s.StartDateTime).ToListAsync();
 
-            List<DateTime> endList = await _context.Bookings.Where(d => d.EndDateTime >= selectedDate 
+            List<DateTime> endList = await _context.Bookings.Where(d => d.EndDateTime >= selectedDate
                 && d.EndDateTime <= endTime && d.BoatId == boatId).Select(s => s.EndDateTime).ToListAsync();
 
             List<DateTime> availableTimeList = CreateSemiHourlyList(selectedDate);
@@ -78,13 +78,13 @@ namespace LmycWeb.APIControllers
             for (int i = 0, j = 1; i < startList.Count(); i++, j++)
             {
                 // removes the available time if it exists in the available time list
-                if (availableTimeList.IndexOf(startList[i]) != -1 )
+                if (availableTimeList.IndexOf(startList[i]) != -1)
                 {
                     availableTimeList.Remove(startList[i]);
                 }
 
                 TimeSpan betweenDiff = endList[i].Subtract(startList[i]);
-                int amountOfHours = (int) betweenDiff.TotalHours - 1;
+                int amountOfHours = (int)betweenDiff.TotalHours - 1;
                 DateTime hourTime = startList[i];
 
                 // removes the hours the are booked
@@ -223,7 +223,7 @@ namespace LmycWeb.APIControllers
             {
                 return BadRequest("Selected boat is not operational");
             }
-            
+
             //Check if the members have enough for the newly allocated credits
             if (newBooking.CreditsUsed != 0)
             {
@@ -234,8 +234,6 @@ namespace LmycWeb.APIControllers
                     return BadRequest("A member does not have enough credits.");
                 }
             }
-            
-
 
             //Refund old charges then Charge the newly allocated credits to each user 
             //if there is any credits to be charged
@@ -323,7 +321,7 @@ namespace LmycWeb.APIControllers
                     _context.Entry(existingNonMember).CurrentValues.SetValues(nonmember);
                 }
             }
-             
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -347,6 +345,7 @@ namespace LmycWeb.APIControllers
         [HttpPost]
         public async Task<IActionResult> PostBooking([FromBody] Booking booking)
         {
+            /* Validate Model from request */
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -365,6 +364,7 @@ namespace LmycWeb.APIControllers
 
             //Calculate the total credit cost using the start and end dates
             booking.CreditsUsed = (int)CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
+
 
 
             if (!boatIsOperational)
@@ -469,7 +469,6 @@ namespace LmycWeb.APIControllers
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
 
-  
             return Ok(booking);
         }
 
@@ -480,6 +479,28 @@ namespace LmycWeb.APIControllers
 
 
         //*************************** HELPER FUNCTIONS *********************************
+
+        /* Function used to validate if credits Charged are the same as Credits Allocated */
+        /* Not used at the moment */
+        public async Task<bool> compareTotalAllocatedWithTotalCharged(List<Member> members, int totalCharged)
+        {
+            int userCharged = 0;
+            if (members.Count() > 0)
+            {
+                foreach (var member in members)
+                {
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    userCharged += member.AllocatedCredits;
+                }
+            }
+
+            if (userCharged != totalCharged)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         public async Task<bool> FullMemberGoodStatusCheckAsync(string userId)
         {
@@ -529,7 +550,8 @@ namespace LmycWeb.APIControllers
                     if (user == null)
                     {
                         oldMember = null;
-                    } else
+                    }
+                    else
                     {
                         oldMember = oldMembers.SingleOrDefault(m => m.UserId.Equals(user.Id));
                     }
@@ -646,8 +668,10 @@ namespace LmycWeb.APIControllers
             return false;
         }
 
+        /* CHECK THIS */
         public int CalculateCredits(DateTime startDate, DateTime endDate, string boatId)
         {
+
             //Get Boat info
             var boat = _context.Boats.SingleOrDefault(m => m.BoatId.Equals(boatId));
             var creditChargePerHour = boat.CreditsPerHour;
@@ -661,16 +685,31 @@ namespace LmycWeb.APIControllers
 
             //Calculate if 24 Hour rule applies
             DateTime currentDay = DateTime.Now;
-            var hoursBeforeBooking = (int)(startDate - currentDay).TotalHours;
-            int freeHours = 0;
+            DateTime endOfFreePeriod = currentDay.AddDays(1);
 
-            if (hoursBeforeBooking < 24)
+            var hoursBeforeBooking = (int)(startDate - currentDay).TotalHours;
+
+            DateTime paidStartDate;
+            if (endOfFreePeriod < startDate)
             {
-                freeHours = 24 - hoursBeforeBooking;
+                paidStartDate = startDate;
+            }
+            else
+            {
+                paidStartDate = endOfFreePeriod;
             }
 
-            DayOfWeek startDay = startDate.DayOfWeek;
-            var hoursInFirstDay = 24 - startDate.Hour - freeHours;
+            int hoursInFirstDay = 0;
+            if (paidStartDate.DayOfYear == endDate.DayOfYear)
+            {
+                hoursInFirstDay = endDate.Hour - paidStartDate.Hour;
+            }
+            else
+            {
+                hoursInFirstDay = 24 - paidStartDate.Hour;
+            }
+
+            DayOfWeek startDay = paidStartDate.DayOfWeek;
 
             if (startDay == DayOfWeek.Saturday || startDay == DayOfWeek.Sunday)
             {
@@ -697,11 +736,11 @@ namespace LmycWeb.APIControllers
             }
 
             //Iterate through dates between start and end date
-            var startDayOfYear = startDate.DayOfYear;
+            var startDayOfYear = paidStartDate.DayOfYear;
             var endDayOfYear = endDate.DayOfYear;
 
             var tempDayOfYear = startDayOfYear + 1;
-            var tempDate = startDate.AddDays(1);
+            var tempDate = paidStartDate.AddDays(1);
 
             while (tempDayOfYear < endDayOfYear)
             {
@@ -718,40 +757,41 @@ namespace LmycWeb.APIControllers
                     totalCredits += 10 * creditChargePerHour;
                 }
 
-
                 tempDate = tempDate.AddDays(1);
                 tempDayOfYear++;
             }
 
             //Calculate Credits for last day
-            DayOfWeek endDay = endDate.DayOfWeek;
-            var hoursInLastDay = endDate.Hour;
-
-
-            if (endDay == DayOfWeek.Saturday || endDay == DayOfWeek.Sunday)
+            //Check if last and first day are the same
+            if (paidStartDate.DayOfYear != endDate.DayOfYear)
             {
-                if (hoursInLastDay >= 15)
+                DayOfWeek endDay = endDate.DayOfWeek;
+                var hoursInLastDay = endDate.Hour;
+
+
+                if (endDay == DayOfWeek.Saturday || endDay == DayOfWeek.Sunday)
                 {
-                    totalCredits += 15 * creditChargePerHour;
+                    if (hoursInLastDay >= 15)
+                    {
+                        totalCredits += 15 * creditChargePerHour;
+                    }
+                    else
+                    {
+                        totalCredits += hoursInLastDay * creditChargePerHour;
+                    }
                 }
                 else
                 {
-                    totalCredits += hoursInLastDay * creditChargePerHour;
+                    if (hoursInLastDay >= 10)
+                    {
+                        totalCredits += 10 * creditChargePerHour;
+                    }
+                    else
+                    {
+                        totalCredits += hoursInLastDay * creditChargePerHour;
+                    }
                 }
             }
-            else
-            {
-                if (hoursInLastDay >= 10)
-                {
-                    totalCredits += 10 * creditChargePerHour;
-                }
-                else
-                {
-                    totalCredits += hoursInLastDay * creditChargePerHour;
-                }
-
-            }
-
             return totalCredits;
         }
 
@@ -759,11 +799,10 @@ namespace LmycWeb.APIControllers
         {
             var boat = await _context.Boats.SingleOrDefaultAsync(b => b.BoatId.Equals(boatId));
 
-            if (boat.Status.Equals("Operational"))
+            if (boat.Status.Equals("operational", StringComparison.InvariantCultureIgnoreCase))
             {
                 return true;
             }
-
 
             return false;
         }
@@ -807,8 +846,8 @@ namespace LmycWeb.APIControllers
                     return false;
                 }
                 _context.Members.Remove(curMember);
-                
-            await _context.SaveChangesAsync();
+
+                await _context.SaveChangesAsync();
             }
             return true;
         }
