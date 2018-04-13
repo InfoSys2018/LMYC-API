@@ -17,7 +17,7 @@ namespace LmycWeb.APIControllers
     [Produces("application/json")]
     [Route("api/accounts")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class AccountAPIController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

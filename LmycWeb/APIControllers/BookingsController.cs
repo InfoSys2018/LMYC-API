@@ -16,7 +16,7 @@ namespace LmycWeb.APIControllers
     [Produces("application/json")]
     [Route("api/bookings")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class BookingsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -30,7 +30,8 @@ namespace LmycWeb.APIControllers
         [HttpGet]
         public IEnumerable<Booking> GetBookings()
         {
-            return _context.Bookings;
+            //return _context.Bookings;
+            return _context.Bookings.Include(b => b.Members).Include(b => b.NonMembers);
         }
 
         // GET: api/Bookings/5
@@ -50,6 +51,97 @@ namespace LmycWeb.APIControllers
             }
 
             return Ok(booking);
+        }
+
+        // GET: api/Bookings/[BoatId]/[SelectedDate]
+        [HttpGet("{boatId}/{selectedDate}")]
+        public async Task<IActionResult> GetAvailableStartTimes([FromRoute] string boatId, [FromRoute] DateTime selectedDate)
+        {
+            var boat = await _context.Boats.SingleOrDefaultAsync(b => b.BoatId == boatId);
+
+            if (boat == null)
+            {
+                return BadRequest("Boat does not exist given ID!");
+            }
+
+            DateTime endTime = selectedDate;
+            endTime = endTime.AddHours(23).AddMinutes(59).AddSeconds(59).AddMilliseconds(999);
+
+            List<DateTime> startList = await _context.Bookings.Where(d => d.StartDateTime >= selectedDate 
+                && d.StartDateTime <= endTime && d.BoatId == boatId).Select(s => s.StartDateTime).ToListAsync();
+
+            List<DateTime> endList = await _context.Bookings.Where(d => d.EndDateTime >= selectedDate 
+                && d.EndDateTime <= endTime && d.BoatId == boatId).Select(s => s.EndDateTime).ToListAsync();
+
+            List<DateTime> availableTimeList = CreateSemiHourlyList(selectedDate);
+
+            for (int i = 0, j = 1; i < startList.Count(); i++, j++)
+            {
+                // removes the available time if it exists in the available time list
+                if (availableTimeList.IndexOf(startList[i]) != -1 )
+                {
+                    availableTimeList.Remove(startList[i]);
+                }
+
+                TimeSpan betweenDiff = endList[i].Subtract(startList[i]);
+                int amountOfHours = (int) betweenDiff.TotalHours - 1;
+                DateTime hourTime = startList[i];
+
+                // removes the hours the are booked
+                for (int x = 0; x < amountOfHours; x++)
+                {
+                    hourTime = hourTime.AddHours(1);
+                    availableTimeList.Remove(hourTime);
+                }
+
+                // removes the times that can not make up a full hour booking
+                if (j < startList.Count())
+                {
+                    TimeSpan diff = startList[j].Subtract(endList[i]);
+                    if (diff.TotalHours < 1)
+                    {
+                        availableTimeList.Remove(endList[i]);
+                    }
+                }
+
+            }
+            return Ok(availableTimeList);
+        }
+
+        // GET: api/Bookings/[BoatId]/[SelectedDate]/[StartTime]
+        [HttpGet("{boatId}/{startTime}/{selectedDate}")]
+        public async Task<IActionResult> GetAvailableEndTimes([FromRoute] string boatId, [FromRoute] DateTime startTime,
+            [FromRoute] DateTime selectedDate)
+        {
+            var boat = await _context.Boats.SingleOrDefaultAsync(b => b.BoatId == boatId);
+
+            if (boat == null)
+            {
+                return BadRequest("Boat does not exist given ID!");
+            }
+            else if (!IsValidDateRange(startTime, selectedDate))
+            {
+                return BadRequest("Start date cannot be after end date!");
+            }
+            else if (!IsValidTimeSpan(startTime, selectedDate))
+            {
+                return BadRequest("Bookings cannot be more than 3 days");
+            }
+
+            DateTime maxDate = selectedDate.AddDays(3);
+
+            DateTime nextStartDate = await _context.Bookings.Where(d => d.StartDateTime > selectedDate
+                && d.BoatId == boatId && d.StartDateTime < maxDate)
+                .Select(s => s.StartDateTime).FirstOrDefaultAsync();
+
+            if (nextStartDate == null)
+            {
+                nextStartDate = selectedDate.AddDays(3);
+            }
+
+            List<DateTime> availableTimesList = CreateSemiHourlyListWithRange(startTime, nextStartDate);
+
+            return Ok(availableTimesList);
         }
 
 
@@ -75,16 +167,23 @@ namespace LmycWeb.APIControllers
 
 
         // GET: api/Bookings/5
-        [Route("user/{id}")]
+        [Route("user/{userName}")]
         [HttpGet]
-        public IActionResult GetBookingByUser([FromRoute] string id)
+        public IActionResult GetBookingByUser([FromRoute] string userName)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var booking = _context.Bookings.Where(m => m.UserId == id);
+            var user = _context.Users.SingleOrDefaultAsync(u => u.UserName.Equals(userName));
+
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            var booking = _context.Bookings.Where(m => m.UserId.Equals(user.Id));
 
             if (booking == null)
             {
@@ -110,6 +209,18 @@ namespace LmycWeb.APIControllers
                 return BadRequest();
             }
 
+
+            //Check if boat is operational
+            bool boatIsOperational = await CheckBoatIsInGoodStatusAsync(booking.BoatId);
+
+            if (!boatIsOperational)
+            {
+                return BadRequest("Selected boat is not operational");
+            }
+
+            //Calculate the total credit cost using the start and end dates
+            booking.CreditsUsed = (int)CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
+
             //Check if the members have enough for the newly allocated credits
             if (booking.CreditsUsed != 0)
             {
@@ -131,8 +242,6 @@ namespace LmycWeb.APIControllers
             }
 
             _context.Entry(booking).State = EntityState.Modified;
-
-            
 
             try
             {
@@ -170,8 +279,19 @@ namespace LmycWeb.APIControllers
                 return BadRequest("The user can't create the booking because they are not in good standing.");
             }
 
+            //Check if boat is operational
+            bool boatIsOperational = await CheckBoatIsInGoodStatusAsync(booking.BoatId);
+
+            //Calculate the total credit cost using the start and end dates
+            booking.CreditsUsed = (int)CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
+
+
+            if (!boatIsOperational)
+            {
+                return BadRequest("Selected boat is not operational");
+            }
             //Check if the booking requires credits
-            if (booking.CreditsUsed != 0)
+            else if (booking.CreditsUsed != 0)
             {
                 bool result = await CheckMembersHaveEnoughCreditsAsync(booking.Members);
 
@@ -180,7 +300,20 @@ namespace LmycWeb.APIControllers
                     return BadRequest("A member does not have enough credits");
                 }
             }
+            else if (!IsValidDateRange(booking.StartDateTime, booking.EndDateTime))
+            {
+                return BadRequest("Start date cannot be after end date!");
+            }
+            else if (!IsValidTimeSpan(booking.StartDateTime, booking.EndDateTime))
+            {
+                return BadRequest("Bookings cannot be more than 3 days");
+            }
+            else if (!IsValidBookingDateRange(booking.BoatId, booking.StartDateTime, booking.EndDateTime).Result)
+            {
+                return BadRequest("Date has been previously reserved");
+            }
 
+            //Check skipper status of members
             int totalDays = (booking.EndDateTime - booking.StartDateTime).Days;
 
             bool skipperStatusResult;
@@ -260,12 +393,15 @@ namespace LmycWeb.APIControllers
 
         public async Task<bool> CheckMembersHaveEnoughCreditsAsync(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                if (user.Credits < member.AllocatedCredits)
+                foreach (var member in members)
                 {
-                    return false;
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    if (user.Credits < member.AllocatedCredits)
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
@@ -277,30 +413,33 @@ namespace LmycWeb.APIControllers
             var oldBooking = await _context.Bookings.SingleOrDefaultAsync(m => m.BookingId == bookingId);
             List<Member> oldMembers = oldBooking.Members;
 
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                //Grab the member user
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-
-                //Grab the oldmember if one exists 
-                var oldMember = oldMembers.SingleOrDefault(m => m.UserId == user.Id);
-
-                //If there is no old member then check that they have enough credits
-                if (oldMember == null)
+                foreach (var member in members)
                 {
-                    if (user.Credits < member.AllocatedCredits)
+                    //Grab the member user
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+
+                    //Grab the oldmember if one exists 
+                    var oldMember = oldMembers.SingleOrDefault(m => m.UserId == user.Id);
+
+                    //If there is no old member then check that they have enough credits
+                    if (oldMember == null)
                     {
-                        return false;
+                        if (user.Credits < member.AllocatedCredits)
+                        {
+                            return false;
+                        }
+
                     }
-                    
-                }
-                //If there is an old member, add their previously charged credits to their 
-                //current credit and check if they have enough credits for the new allocation
-                else
-                {
-                    if ((user.Credits + oldMember.AllocatedCredits) < member.AllocatedCredits)
+                    //If there is an old member, add their previously charged credits to their 
+                    //current credit and check if they have enough credits for the new allocation
+                    else
                     {
-                        return false;
+                        if ((user.Credits + oldMember.AllocatedCredits) < member.AllocatedCredits)
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -312,25 +451,27 @@ namespace LmycWeb.APIControllers
             //Grab the old booking and its members from the context
             var oldBooking = await _context.Bookings.SingleOrDefaultAsync(m => m.BookingId == bookingId);
             List<Member> oldMembers = oldBooking.Members;
-
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                //Grab the member user
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-
-                //Grab the oldmember if one exists 
-                var oldMember = oldMembers.SingleOrDefault(m => m.UserId == user.Id);
-
-                //If there is no old member charge them the credits
-                if (oldMember == null)
+                foreach (var member in members)
                 {
-                    user.Credits = user.Credits - member.AllocatedCredits;
-                }
-                //If there is an old member, refund their previously charged credits to their 
-                //current credit and charge them the new amount
-                else
-                {
-                    user.Credits = user.Credits + oldMember.AllocatedCredits - member.AllocatedCredits;
+                    //Grab the member user
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+
+                    //Grab the oldmember if one exists 
+                    var oldMember = oldMembers.SingleOrDefault(m => m.UserId == user.Id);
+
+                    //If there is no old member charge them the credits
+                    if (oldMember == null)
+                    {
+                        user.Credits = user.Credits - member.AllocatedCredits;
+                    }
+                    //If there is an old member, refund their previously charged credits to their 
+                    //current credit and charge them the new amount
+                    else
+                    {
+                        user.Credits = user.Credits + oldMember.AllocatedCredits - member.AllocatedCredits;
+                    }
                 }
             }
             await _context.SaveChangesAsync();
@@ -338,32 +479,41 @@ namespace LmycWeb.APIControllers
 
         public async void ChargeBookingMemberCredits(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                user.Credits = user.Credits - member.AllocatedCredits;
+                foreach (var member in members)
+                {
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    user.Credits = user.Credits - member.AllocatedCredits;
+                }
             }
             await _context.SaveChangesAsync();
         }
 
         public async void RefundBookingMemberCredits(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                user.Credits = user.Credits + member.AllocatedCredits;
+                foreach (var member in members)
+                {
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    user.Credits = user.Credits + member.AllocatedCredits;
+                }
             }
             await _context.SaveChangesAsync();
         }
 
         public async Task<bool> CheckSkipperStatusForOverNightAsync(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                if (user.SkipperStatus.Equals("cruise skipper", StringComparison.InvariantCultureIgnoreCase))
+                foreach (var member in members)
                 {
-                    return true;
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    if (user.SkipperStatus.Equals("cruise skipper", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -371,21 +521,189 @@ namespace LmycWeb.APIControllers
 
         public async Task<bool> CheckSkipperStatusForDayAsync(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                if (user.SkipperStatus.Equals("day skipper", StringComparison.InvariantCultureIgnoreCase))
+                foreach (var member in members)
                 {
-                    return true;
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    if (user.SkipperStatus.Equals("day skipper", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
         }
 
+        public int CalculateCredits(DateTime startDate, DateTime endDate, string boatId)
+        {
+            //Get Boat info
+            var boat = _context.Boats.SingleOrDefault(m => m.BoatId.Equals(boatId));
+            var creditChargePerHour = boat.CreditsPerHour;
+
+            //Calculate booking info
+            var totalHoursOfBooking = (endDate - startDate).TotalHours;
+
+            int totalCredits = 0;
+
+            // *********** Calculate Credits *************
+
+            //Calculate if 24 Hour rule applies
+            DateTime currentDay = DateTime.Now;
+            var hoursBeforeBooking = (int)(startDate - currentDay).TotalHours;
+            int freeHours = 0;
+
+            if (hoursBeforeBooking < 24)
+            {
+                freeHours = 24 - hoursBeforeBooking;
+            }
+
+            DayOfWeek startDay = startDate.DayOfWeek;
+            var hoursInFirstDay = 24 - startDate.Hour - freeHours;
+
+            if (startDay == DayOfWeek.Saturday || startDay == DayOfWeek.Sunday)
+            {
+                if (hoursInFirstDay >= 15)
+                {
+                    totalCredits += 15 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += hoursInFirstDay * creditChargePerHour;
+                }
+            }
+            else
+            {
+                if (hoursInFirstDay >= 10)
+                {
+                    totalCredits += 10 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += hoursInFirstDay * creditChargePerHour;
+                }
+
+            }
+
+            //Iterate through dates between start and end date
+            var startDayOfYear = startDate.DayOfYear;
+            var endDayOfYear = endDate.DayOfYear;
+
+            var tempDayOfYear = startDayOfYear + 1;
+            var tempDate = startDate.AddDays(1);
+
+            while (tempDayOfYear < endDayOfYear)
+            {
+
+                DayOfWeek day = tempDate.DayOfWeek;
+
+                //Check if its a weekend
+                if (day == DayOfWeek.Saturday || day == DayOfWeek.Sunday)
+                {
+                    totalCredits += 15 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += 10 * creditChargePerHour;
+                }
 
 
+                tempDate = tempDate.AddDays(1);
+                tempDayOfYear++;
+            }
+
+            //Calculate Credits for last day
+            DayOfWeek endDay = endDate.DayOfWeek;
+            var hoursInLastDay = endDate.Hour;
 
 
+            if (endDay == DayOfWeek.Saturday || endDay == DayOfWeek.Sunday)
+            {
+                if (hoursInLastDay >= 15)
+                {
+                    totalCredits += 15 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += hoursInLastDay * creditChargePerHour;
+                }
+            }
+            else
+            {
+                if (hoursInLastDay >= 10)
+                {
+                    totalCredits += 10 * creditChargePerHour;
+                }
+                else
+                {
+                    totalCredits += hoursInLastDay * creditChargePerHour;
+                }
+
+            }
+
+            return totalCredits;
+        }
+
+        public async Task<bool> CheckBoatIsInGoodStatusAsync(string boatId)
+        {
+            var boat = await _context.Boats.SingleOrDefaultAsync(b => b.BoatId.Equals(boatId));
+
+            if (boat.Status.Equals("operational"))
+            {
+                return true;
+            }
+
+
+            return false;
+        }
+
+        private List<DateTime> CreateSemiHourlyList(DateTime selectedTime)
+        {
+            List<DateTime> list = new List<DateTime>();
+            list.Add(selectedTime);
+
+            for (int i = 0; i < 23; i++)
+            {
+                selectedTime = selectedTime.AddHours(1);
+                list.Add(selectedTime);
+            }
+
+            return list;
+        }
+
+        private List<DateTime> CreateSemiHourlyListWithRange(DateTime startTime, DateTime endTime)
+        {
+            List<DateTime> list = new List<DateTime>();
+
+            while (startTime != endTime)
+            {
+                startTime = startTime.AddHours(1);
+                list.Add(startTime);
+            }
+
+            return list;
+        }
+
+        private Boolean IsValidDateRange(DateTime startTime, DateTime endTime)
+        {
+            return endTime > startTime;
+        }
+
+        private Boolean IsValidTimeSpan(DateTime startTime, DateTime endTime)
+        {
+            TimeSpan diff = endTime.Subtract(startTime);
+
+            return (int)diff.TotalHours <= 72;
+        }
+
+        private async Task<Boolean> IsValidBookingDateRange(string boatId, DateTime startTime, DateTime endTime)
+        {
+            DateTime nextStartDate = await _context.Bookings.Where(d => d.StartDateTime > startTime
+                && d.BoatId == boatId && d.StartDateTime < endTime)
+                .Select(s => s.StartDateTime).FirstOrDefaultAsync();
+
+            return nextStartDate == null;
+        }
 
     }
 }

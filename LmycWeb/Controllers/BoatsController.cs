@@ -60,6 +60,12 @@ namespace LmycWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BoatId,Name,CreditsPerHour,Status,Photo,Description,Length,Make,Year")] BoatViewModel boatViewModel)
         {
+            if (boatViewModel.Photo == null)
+            {
+                ViewBag.PhotoError = "Upload Photo Please";
+                return View(boatViewModel);
+            }
+
             if (ModelState.IsValid)
             {
                 var boat = new Boat
@@ -79,6 +85,8 @@ namespace LmycWeb.Controllers
                     await boatViewModel.Photo.CopyToAsync(memoryStream);
                     boat.Photo = memoryStream.ToArray();
                 }
+
+
 
                 _context.Add(boat);
                 await _context.SaveChangesAsync();
@@ -109,7 +117,7 @@ namespace LmycWeb.Controllers
                 Make = boat.Make,
                 Year = boat.Year
             };
-            
+
             if (boat == null)
             {
                 return NotFound();
@@ -128,28 +136,34 @@ namespace LmycWeb.Controllers
             {
                 return NotFound();
             }
-
+            if (boatViewModel.Photo == null)
+            {
+                ViewBag.PhotoError = "Upload Photo Please";
+                return View(boatViewModel);
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var boat = _context.Boats.Find(id);
 
-                    var boat = new Boat
-                    {
-                        BoatId = boatViewModel.BoatId,
-                        Name = boatViewModel.Name,
-                        CreditsPerHour = boatViewModel.CreditsPerHour,
-                        Status = boatViewModel.Status,
-                        Description = boatViewModel.Description,
-                        Length = boatViewModel.Length,
-                        Make = boatViewModel.Make,
-                        Year = boatViewModel.Year
-                    };
+                    boat.BoatId = boatViewModel.BoatId;
+                    boat.Name = boatViewModel.Name;
+                    boat.CreditsPerHour = boatViewModel.CreditsPerHour;
+                    boat.Status = boatViewModel.Status;
+                    boat.Description = boatViewModel.Description;
+                    boat.Length = boatViewModel.Length;
+                    boat.Make = boatViewModel.Make;
+                    boat.Year = boatViewModel.Year;
 
-                    using (var memoryStream = new MemoryStream())
+
+                    if (boatViewModel.Photo != null)
                     {
-                        await boatViewModel.Photo.CopyToAsync(memoryStream);
-                        boat.Photo = memoryStream.ToArray();
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await boatViewModel.Photo.CopyToAsync(memoryStream);
+                            boat.Photo = memoryStream.ToArray();
+                        }
                     }
 
                     _context.Update(boat);

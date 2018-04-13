@@ -20,7 +20,7 @@ namespace LmycWeb.APIControllers
     [Produces("application/json")]
     [Route("api/documents")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class DocumentsAPIController : Controller
     {
         private readonly ApplicationDbContext _context;

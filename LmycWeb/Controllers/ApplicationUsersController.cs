@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +10,11 @@ using LmycWeb.Data;
 using LmycWeb.Models;
 using Microsoft.AspNetCore.Identity;
 using LmycWeb.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LmycWeb.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ApplicationUsersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,8 +29,15 @@ namespace LmycWeb.Controllers
         // GET: ApplicationUsers
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.ApplicationUser.Include(a => a.EmergencyContacts);
-            return View(await applicationDbContext.ToListAsync());
+
+            var users = _context.ApplicationUser.Include(a => a.EmergencyContacts);
+
+            foreach (var user in users)
+            {
+                user.TotalHours = _context.Reports.Where(r => r.UserId == user.Id).Sum(r => r.Hours);
+            }
+
+            return View(await users.ToListAsync());
         }
 
         // GET: ApplicationUsers/Details/5
