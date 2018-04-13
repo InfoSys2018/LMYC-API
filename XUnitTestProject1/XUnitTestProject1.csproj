@@ -9,7 +9,14 @@
   <ItemGroup>
     <Compile Remove="OldISTests\ApplicationUserApiControllerTests.cs" />
     <Compile Remove="OldISTests\EmployeesApiControllerTests.cs" />
+    <Compile Remove="OldISTests\Helpers.cs" />
     <Compile Remove="OldISTests\LaborGradesApiControllerTests.cs" />
+    <Compile Remove="OldISTests\ProjectsApiControllerTests.cs" />
+    <Compile Remove="OldISTests\ResponsibleEngineerBudgetsApiControllerTests.cs" />
+    <Compile Remove="OldISTests\RolesApiControllerTests.cs" />
+    <Compile Remove="OldISTests\TimesheetsApiControllerTests.cs" />
+    <Compile Remove="OldISTests\UsersInRolesApiControllerTests.cs" />
+    <Compile Remove="OldISTests\WorkPackagesApiControllerTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

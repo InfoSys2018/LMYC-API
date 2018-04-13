@@ -19,7 +19,7 @@ using LmycWeb.Interfaces;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Documents")]
+    [Route("api/documents")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("AllowAllOrigins")]
     public class DocumentsAPIController : Controller

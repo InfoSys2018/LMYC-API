@@ -17,18 +17,22 @@ namespace LmycWeb.Models
         [Display(Name = "Member Status")]
         public string MemberStatus { get; set; }
         [Display(Name = "Skipper Status")]
-        public string SkipperStatus { get; set; }
+        public string SkipperStatus { get; set; } 
         public string Street { get; set; }
         public string City { get; set; }
         public string Province { get; set; }
         [Display(Name = "Postal Code")]
+        [Phone]
         public string PostalCode { get; set; }
         public string Country { get; set; }
         [Display(Name = "Mobile Phone")]
+        [Phone]
         public string MobilePhone { get; set; }
         [Display(Name = "Home Phone")]
+        [Phone]
         public string HomePhone { get; set; }
         [Display(Name = "Work Phone")]
+        [Phone]
         public string WorkPhone { get; set; }
         [Display(Name = "Sailing Qualifications")]
         public string SailingQualifications { get; set; }
@@ -39,5 +43,6 @@ namespace LmycWeb.Models
         public string EmergencyContactId { get; set; }
         public EmergencyContact EmergencyContacts { get; set; }
         public List<Booking> Bookings { get; set; }
+        public List<Report> Reports { get; set; }
     }
 }

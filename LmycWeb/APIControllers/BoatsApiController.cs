@@ -15,9 +15,9 @@ using LmycWeb.Interfaces;
 namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
-    [Route("api/Boats")]
+    [Route("api/boats")]
     [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors("AllowAllOrigins")]
+    [EnableCors("CorsPolicy")]
     public class BoatsApiController : Controller
     {
         private readonly IDbContext _context;

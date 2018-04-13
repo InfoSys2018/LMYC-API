@@ -25,6 +25,102 @@ namespace XUnitTestProject1
             Assert.Equal(7, resultList.Count);
         }
 
+        [Fact]
+        public void GetProject_WhenModelStateIsInvalid()
+        {
+            string boatId = "abc123";
+            var controller = new BoatsApiController(null);
+            controller.ModelState.AddModelError("key", "message");
+            var result = controller.GetBoat(boatId);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<SerializableError>(badRequestResult.Value);
+        }
+
+        [Fact(Skip = "Issue with SingleOrDefaultAsync call")]
+        public void GetBoat_WhenBoatNotFound()
+        {
+            string boatId = "x";
+            var dbContext = new Mock<IDbContext>();
+            var mockList = MockDbSet(testBoats);
+            dbContext.Setup(c => c.Boats).Returns(mockList.Object);
+
+            var controller = new BoatsApiController(dbContext.Object);
+
+            var result = controller.GetBoat(boatId);
+
+            Assert.IsType<NotFoundResult>(result.Result);
+        }
+
+        [Fact]
+        public void PutProject_WhenModelStateIsInvalid()
+        {
+            var controller = new BoatsApiController(null);
+            controller.ModelState.AddModelError("key", "message");
+            var result = controller.PutBoat(null, null);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<SerializableError>(badRequestResult.Value);
+        }
+
+        [Fact]
+        public void PutBoat_WhenIdDoesNotMatchProjectNumber()
+        {
+            string id = "abc123";
+            var Boat = testBoats[0];
+            var controller = new BoatsApiController(null);
+            int code = 400;
+
+            var result = controller.PutBoat(id, Boat);
+
+            var badRequestResult = Assert.IsType<BadRequestResult>(result.Result);
+            Assert.Equal(code, badRequestResult.StatusCode);
+        }
+
+        //[Fact(Skip = "Incomplete: mock dbcontext.Entry()")]
+        [Fact]
+        public void PutProject_()
+        {
+            string id = "MyFavBoat5555";
+            var project = testBoats[0];
+
+            var dbContext = new Mock<IDbContext>();
+            var mockList = MockDbSet(testBoats);
+            dbContext.Setup(c => c.Boats).Returns(mockList.Object);
+            var controller = new BoatsApiController(dbContext.Object);
+
+            var result = controller.PutBoat(id, project);
+        }
+
+        [Fact]
+        public void PostBoat_WhenModelStateIsInvalid()
+        {
+            Boat project = testBoats[0];
+            var controller = new BoatsApiController(null);
+            controller.ModelState.AddModelError("key", "message");
+
+            var result = controller.PostBoat(project);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<SerializableError>(badRequestResult.Value);
+        }
+
+        [Fact]
+        public void PostBoat_Successful()
+        {
+            Boat project = testBoats[0];
+            var dbContext = new Mock<IDbContext>();
+            var mockList = MockDbSet(testBoats);
+            dbContext.Setup(x => x.Boats).Returns(mockList.Object);
+            var controller = new BoatsApiController(dbContext.Object);
+
+            var result = controller.PostBoat(project);
+
+            Assert.IsType<CreatedAtActionResult>(result.Result);
+        }
+
+
+
+
         //[Theory]
         //[InlineData("B01")]
         //public void GetBoatsWithBoatId(string boatId)
