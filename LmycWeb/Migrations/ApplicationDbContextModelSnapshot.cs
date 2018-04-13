@@ -188,7 +188,6 @@ namespace LmycWeb.Migrations
 
                     b.HasIndex("Id");
 
-
                     b.ToTable("Documents");
                 });
 
@@ -534,7 +533,6 @@ namespace LmycWeb.Migrations
                     b.HasOne("LmycWeb.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("Id");
-
                 });
 
             modelBuilder.Entity("LmycWeb.Models.Member", b =>
@@ -564,7 +562,7 @@ namespace LmycWeb.Migrations
                         .HasForeignKey("CodeId");
 
                     b.HasOne("LmycWeb.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Reports")
                         .HasForeignKey("UserId");
                 });
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace LmycWeb.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -322,14 +322,14 @@ namespace LmycWeb.Migrations
                     Content = table.Column<byte[]>(nullable: true),
                     ContentType = table.Column<string>(nullable: true),
                     DocumentName = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
+                    Id = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Documents", x => x.DocumentId);
                     table.ForeignKey(
-                        name: "FK_Documents_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Documents_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -498,9 +498,9 @@ namespace LmycWeb.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Documents_UserId",
+                name: "IX_Documents_Id",
                 table: "Documents",
-                column: "UserId");
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NonMembers_BookingId",
