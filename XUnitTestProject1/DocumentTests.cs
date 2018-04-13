@@ -1,6 +1,7 @@
 ﻿using LmycWeb.APIControllers;
 using LmycWeb.Interfaces;
 using LmycWeb.Models;
+using LmycWeb.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -27,56 +28,63 @@ namespace XUnitTestProject1
             Assert.Equal(3, resultList.Count);
         }
 
-        //[Fact]
-        //public void GetProject_WhenModelStateIsInvalid()
-        //{
-        //    string boatId = "abc123";
-        //    var controller = new BoatsApiController(null);
-        //    controller.ModelState.AddModelError("key", "message");
-        //    var result = controller.GetBoat(boatId);
+        [Fact]
+        public void GetDocument_WhenModelStateIsInvalid()
+        {
+            var dbContext = new Mock<IDbContext>();
+            var ISContext = new Mock<IServiceProvider>();
+            string documentId = "abc123";
+            var controller = new DocumentsAPIController(dbContext.Object, ISContext.Object);
+            controller.ModelState.AddModelError("key", "message");
+            var result = controller.GetDocument(documentId);
 
-        //    var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-        //    Assert.IsType<SerializableError>(badRequestResult.Value);
-        //}
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<SerializableError>(badRequestResult.Value);
+        }
 
-        //[Fact(Skip = "Issue with SingleOrDefaultAsync call")]
-        //public void GetBoat_WhenBoatNotFound()
+        ////[Fact(Skip = "Issue with SingleOrDefaultAsync call")]
+        //public void GetDocumet_WhenDocumentNotFound()
         //{
-        //    string boatId = "x";
+        //    string documentId = "x";
         //    var dbContext = new Mock<IDbContext>();
-        //    var mockList = MockDbSet(testBoats);
-        //    dbContext.Setup(c => c.Boats).Returns(mockList.Object);
+        //    var ISContext = new Mock<IServiceProvider>();
+        //    var mockList = MockDbSet(testDocuments);
+        //    dbContext.Setup(c => c.Documents).Returns(mockList.Object);
 
-        //    var controller = new BoatsApiController(dbContext.Object);
+        //    var controller = new DocumentsAPIController(dbContext.Object, ISContext.Object);
 
-        //    var result = controller.GetBoat(boatId);
+        //    var result = controller.GetDocument(documentId);
 
         //    Assert.IsType<NotFoundResult>(result.Result);
         //}
 
-        //[Fact]
-        //public void PutProject_WhenModelStateIsInvalid()
-        //{
-        //    var controller = new BoatsApiController(null);
-        //    controller.ModelState.AddModelError("key", "message");
-        //    var result = controller.PutBoat(null, null);
-        //    var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-        //    Assert.IsType<SerializableError>(badRequestResult.Value);
-        //}
+        [Fact]
+        public void PutDocument_WhenModelStateIsInvalid()
+        {
+            var dbContext = new Mock<IDbContext>();
+            var ISContext = new Mock<IServiceProvider>();
+            var controller = new DocumentsAPIController(dbContext.Object, ISContext.Object);
+            controller.ModelState.AddModelError("key", "message");
+            var result = controller.PutDocument(null, null);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<SerializableError>(badRequestResult.Value);
+        }
 
-        //[Fact]
-        //public void PutBoat_WhenIdDoesNotMatchProjectNumber()
-        //{
-        //    string id = "abc123";
-        //    var Boat = testBoats[0];
-        //    var controller = new BoatsApiController(null);
-        //    int code = 400;
+        [Fact]
+        public void PutDocument_WhenIdDoesNotMatchDocumentId()
+        {
+            string id = "abc123";
+            var document = testDocuments[0];
+            var dbContext = new Mock<IDbContext>();
+            var ISContext = new Mock<IServiceProvider>();
+            var controller = new DocumentsAPIController(dbContext.Object, ISContext.Object);
+            int code = 400;
 
-        //    var result = controller.PutBoat(id, Boat);
+            var result = controller.PutDocument(id, document);
 
-        //    var badRequestResult = Assert.IsType<BadRequestResult>(result.Result);
-        //    Assert.Equal(code, badRequestResult.StatusCode);
-        //}
+            var badRequestResult = Assert.IsType<BadRequestResult>(result.Result);
+            Assert.Equal(code, badRequestResult.StatusCode);
+        }
 
         //[Fact(Skip = "Incomplete: mock dbcontext.Entry()")]
         //[Fact]
@@ -95,123 +103,39 @@ namespace XUnitTestProject1
         //    Assert.IsType<NoContentResult>(result);
         //}
 
+        [Fact]
+        public void PostDocument_WhenModelStateIsInvalid()
+        {
+            DocumentViewModel document = new DocumentViewModel();
+            var dbContext = new Mock<IDbContext>();
+            var ISContext = new Mock<IServiceProvider>();
+            var controller = new DocumentsAPIController(dbContext.Object, ISContext.Object);
+            controller.ModelState.AddModelError("key", "message");
+
+            var result = controller.PostDocument(document);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<SerializableError>(badRequestResult.Value);
+        }
+
         //[Fact]
-        //public void PostBoat_WhenModelStateIsInvalid()
+        //public void PostDocument_Successful()
         //{
-        //    Boat project = testBoats[0];
-        //    var controller = new BoatsApiController(null);
-        //    controller.ModelState.AddModelError("key", "message");
-
-        //    var result = controller.PostBoat(project);
-
-        //    var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-        //    Assert.IsType<SerializableError>(badRequestResult.Value);
-        //}
-
-        //[Fact]
-        //public void PostBoat_Successful()
-        //{
-        //    Boat project = testBoats[0];
+        //    DocumentViewModel document = new DocumentViewModel();
+        //    document.Content = null;
         //    var dbContext = new Mock<IDbContext>();
-        //    var mockList = MockDbSet(testBoats);
-        //    dbContext.Setup(x => x.Boats).Returns(mockList.Object);
-        //    var controller = new BoatsApiController(dbContext.Object);
+        //    var ISContext = new Mock<IServiceProvider>();
+        //    var controller = new DocumentsAPIController(dbContext.Object, ISContext.Object);
+        //    var mockList = MockDbSet(testDocuments);
+        //    dbContext.Setup(x => x.Documents).Returns(mockList.Object);
 
-        //    var result = controller.PostBoat(project);
+        //    var result = controller.PostDocument(document);
 
         //    Assert.IsType<CreatedAtActionResult>(result.Result);
         //}
 
 
         /* Helper methods and sample data */
-
-        List<Boat> testBoats = new List<Boat>()
-                {
-                    new Boat
-                    {
-                        BoatId = "B01",
-                        Name = "Sharquis",
-                        CreditsPerHour = 6,
-                        Status = "Out-of Service",
-                        Photo = null,
-                        Description = "Sharqui was added to the fleet in 2016.  Another of the very popular C&C designs for style, comfort, and speed. Sharqui sleeps five comfortably, has an aftermarket outboard motor, and sports a very generous dodger for protection on heavy weather days.",
-                        Length = 27,
-                        Make = "C&C",
-                        Year = 1981
-                    },
-                    new Boat
-                    {
-                        BoatId = "B02",
-                        Name = "Pegasus",
-                        CreditsPerHour = 6,
-                        Status = "Out-of Service",
-                        Photo = null,
-                        Description = "Pegasus will be oufitted for travelling to Desolation Sound for the first time this summer. Members are looking forward to a roomier more comfortable boat with generous side decks.",
-                        Length = 27,
-                        Make = "C&C",
-                        Year = 1979
-                    },
-                    new Boat
-                    {
-                        BoatId = "B03",
-                        Name = "Lightcure",
-                        CreditsPerHour = 6,
-                        Status = "Out-of Service",
-                        Photo = null,
-                        Description = "She is one of our most popular boats, being a good sailor and comfortable while cruising.\nShe sleeps 5 adults comfortably. She was refitted in 2005 and is powered by a remote controlled Yamaha outboard.\nLightcure has a BBQ, cockpit table, asymmetrical spinnaker and all the extras to be comfortable for cruising.She is also rigged for use in local sailboat races.",
-                        Length = 27,
-                        Make = "C&C Mark 3",
-                        Year = 1979
-                    },
-                    new Boat
-                    {
-                        BoatId = "B04",
-                        Name = "Frankie",
-                        CreditsPerHour = 6,
-                        Status = "Out-of Service",
-                        Photo = null,
-                        Description = "She is designated as a “day sailor”, and is available for use in Semiahmoo Bay.\nShe is outfitted with some of the amenities for cruising and may be used occasionally for overnight trips.\nShe might sleep 4 adults comfortably.Frankie has a spray dodger and is powered by a Yamaha outboard.",
-                        Length = 25,
-                        Make = "Cal Mark 2",
-                        Year = 1983
-                    },
-                    new Boat
-                    {
-                        BoatId = "B05",
-                        Name = "White Swan",
-                        CreditsPerHour = 6,
-                        Status = "Out-of Service",
-                        Photo = null,
-                        Description = "She is a cruising boat, with a spray dodger, inboard diesel engine and enclosed head.\nWhite Swan is popular for longer trips to the local islands.She sleeps 4 adults very comfortably with a private aft cabin and V-berth.",
-                        Length = 28,
-                        Make = "C&C Mark 2",
-                        Year = 1983
-                    },
-                    new Boat
-                    {
-                        BoatId = "B06",
-                        Name = "Peak Time",
-                        CreditsPerHour = 6,
-                        Status = "Out-of Service",
-                        Photo = null,
-                        Description = "She has a spray dodger, BBQ and a comfortable cockpit.\nShe has all the amenities and can be used as a cruiser or day sailing boat.\nShe can sleep 4 adults. Peak Time is powered by a Yamaha outboard engine.\nShe is also rigged for use in local sailboat races.",
-                        Length = 27,
-                        Make = "C&C Mark 5",
-                        Year = 1985
-                    },
-                    new Boat
-                    {
-                        BoatId = "B07",
-                        Name = "Y-Knot",
-                        CreditsPerHour = 6,
-                        Status = "Out-of Service",
-                        Photo = null,
-                        Description = "A spacious fast cruiser.\nShe has a comfortable cockpit, spray dodger.\nShe has all the amenities of a cruiser.\nLarge aft head/shower.\nShe can sleep up to 6 adults in comfort.\nPowered by Yanmar diesel.\nStable wing keel design.\nOpen transom with swim grid,BBQ for sailing adventures.",
-                        Length = 30,
-                        Make = "Cruiser",
-                        Year = 1985
-                    },
-                };
 
         List<Document> testDocuments = new List<Document>()
                 {
