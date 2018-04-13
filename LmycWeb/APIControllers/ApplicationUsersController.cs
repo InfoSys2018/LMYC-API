@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 
 namespace LmycWeb.APIControllers
@@ -14,6 +16,7 @@ namespace LmycWeb.APIControllers
     [Produces("application/json")]
     [Route("api/applicationusers")]
     [EnableCors("AllowAllOrigins")]
+    [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     public class ApplicationUsersController : Controller
     {
         private readonly ApplicationDbContext _context;

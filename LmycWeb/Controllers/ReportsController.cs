@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using LmycWeb.Data;
 using LmycWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace LmycWeb.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;
