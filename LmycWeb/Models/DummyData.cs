@@ -388,6 +388,28 @@ namespace LmycWeb.Models
                     UserId = ReportUser2.Id,
                     Code = ClassCode3,
                     CodeId = ClassCode3.CodeId,
+                },
+                new Report
+                {
+                    Content = "Test Report 4",
+                    Hours = 5,
+                    Approved = false,
+                    DateCreated = DateTime.Now,
+                    User = ReportUser1,
+                    UserId = ReportUser1.Id,
+                    Code = ClassCode1,
+                    CodeId = ClassCode1.CodeId,
+                },
+                new Report
+                {
+                    Content = "Test Report 5",
+                    Hours = 2,
+                    Approved = false,
+                    DateCreated = DateTime.Now,
+                    User = ReportUser1,
+                    UserId = ReportUser1.Id,
+                    Code = ClassCode1,
+                    CodeId = ClassCode1.CodeId,
                 }
             };
             return Reports;
