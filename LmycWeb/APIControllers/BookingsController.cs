@@ -31,7 +31,8 @@ namespace LmycWeb.APIControllers
         [HttpGet]
         public IEnumerable<Booking> GetBookings()
         {
-            return _context.Bookings;
+            //return _context.Bookings;
+            return _context.Bookings.Include(b => b.Members).Include(b => b.NonMembers);
         }
 
         // GET: api/Bookings/5
@@ -282,14 +283,14 @@ namespace LmycWeb.APIControllers
             //Check if boat is operational
             bool boatIsOperational = await CheckBoatIsInGoodStatusAsync(booking.BoatId);
 
+            //Calculate the total credit cost using the start and end dates
+            booking.CreditsUsed = (int)CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
+
+
             if (!boatIsOperational)
             {
                 return BadRequest("Selected boat is not operational");
             }
-
-            //Calculate the total credit cost using the start and end dates
-            booking.CreditsUsed = (int) CalculateCredits(booking.StartDateTime, booking.EndDateTime, booking.BoatId);
-
             //Check if the booking requires credits
             else if (booking.CreditsUsed != 0)
             {
@@ -393,12 +394,15 @@ namespace LmycWeb.APIControllers
 
         public async Task<bool> CheckMembersHaveEnoughCreditsAsync(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                if (user.Credits < member.AllocatedCredits)
+                foreach (var member in members)
                 {
-                    return false;
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    if (user.Credits < member.AllocatedCredits)
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
@@ -410,30 +414,33 @@ namespace LmycWeb.APIControllers
             var oldBooking = await _context.Bookings.SingleOrDefaultAsync(m => m.BookingId == bookingId);
             List<Member> oldMembers = oldBooking.Members;
 
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                //Grab the member user
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-
-                //Grab the oldmember if one exists 
-                var oldMember = oldMembers.SingleOrDefault(m => m.UserId == user.Id);
-
-                //If there is no old member then check that they have enough credits
-                if (oldMember == null)
+                foreach (var member in members)
                 {
-                    if (user.Credits < member.AllocatedCredits)
+                    //Grab the member user
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+
+                    //Grab the oldmember if one exists 
+                    var oldMember = oldMembers.SingleOrDefault(m => m.UserId == user.Id);
+
+                    //If there is no old member then check that they have enough credits
+                    if (oldMember == null)
                     {
-                        return false;
+                        if (user.Credits < member.AllocatedCredits)
+                        {
+                            return false;
+                        }
+
                     }
-                    
-                }
-                //If there is an old member, add their previously charged credits to their 
-                //current credit and check if they have enough credits for the new allocation
-                else
-                {
-                    if ((user.Credits + oldMember.AllocatedCredits) < member.AllocatedCredits)
+                    //If there is an old member, add their previously charged credits to their 
+                    //current credit and check if they have enough credits for the new allocation
+                    else
                     {
-                        return false;
+                        if ((user.Credits + oldMember.AllocatedCredits) < member.AllocatedCredits)
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -445,25 +452,27 @@ namespace LmycWeb.APIControllers
             //Grab the old booking and its members from the context
             var oldBooking = await _context.Bookings.SingleOrDefaultAsync(m => m.BookingId == bookingId);
             List<Member> oldMembers = oldBooking.Members;
-
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                //Grab the member user
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-
-                //Grab the oldmember if one exists 
-                var oldMember = oldMembers.SingleOrDefault(m => m.UserId == user.Id);
-
-                //If there is no old member charge them the credits
-                if (oldMember == null)
+                foreach (var member in members)
                 {
-                    user.Credits = user.Credits - member.AllocatedCredits;
-                }
-                //If there is an old member, refund their previously charged credits to their 
-                //current credit and charge them the new amount
-                else
-                {
-                    user.Credits = user.Credits + oldMember.AllocatedCredits - member.AllocatedCredits;
+                    //Grab the member user
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+
+                    //Grab the oldmember if one exists 
+                    var oldMember = oldMembers.SingleOrDefault(m => m.UserId == user.Id);
+
+                    //If there is no old member charge them the credits
+                    if (oldMember == null)
+                    {
+                        user.Credits = user.Credits - member.AllocatedCredits;
+                    }
+                    //If there is an old member, refund their previously charged credits to their 
+                    //current credit and charge them the new amount
+                    else
+                    {
+                        user.Credits = user.Credits + oldMember.AllocatedCredits - member.AllocatedCredits;
+                    }
                 }
             }
             await _context.SaveChangesAsync();
@@ -471,32 +480,41 @@ namespace LmycWeb.APIControllers
 
         public async void ChargeBookingMemberCredits(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                user.Credits = user.Credits - member.AllocatedCredits;
+                foreach (var member in members)
+                {
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    user.Credits = user.Credits - member.AllocatedCredits;
+                }
             }
             await _context.SaveChangesAsync();
         }
 
         public async void RefundBookingMemberCredits(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                user.Credits = user.Credits + member.AllocatedCredits;
+                foreach (var member in members)
+                {
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    user.Credits = user.Credits + member.AllocatedCredits;
+                }
             }
             await _context.SaveChangesAsync();
         }
 
         public async Task<bool> CheckSkipperStatusForOverNightAsync(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                if (user.SkipperStatus.Equals("cruise skipper", StringComparison.InvariantCultureIgnoreCase))
+                foreach (var member in members)
                 {
-                    return true;
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    if (user.SkipperStatus.Equals("cruise skipper", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -504,12 +522,15 @@ namespace LmycWeb.APIControllers
 
         public async Task<bool> CheckSkipperStatusForDayAsync(List<Member> members)
         {
-            foreach (var member in members)
+            if (members.Count() > 0)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
-                if (user.SkipperStatus.Equals("day skipper", StringComparison.InvariantCultureIgnoreCase))
+                foreach (var member in members)
                 {
-                    return true;
+                    var user = await _context.Users.SingleOrDefaultAsync(m => m.Id == member.UserId);
+                    if (user.SkipperStatus.Equals("day skipper", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
