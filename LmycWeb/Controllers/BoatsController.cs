@@ -128,7 +128,11 @@ namespace LmycWeb.Controllers
             {
                 return NotFound();
             }
-
+            if (boatViewModel.Photo == null)
+            {
+                ViewBag.PhotoError = "Upload Photo Please";
+                return View(boatViewModel);
+            }
             if (ModelState.IsValid)
             {
                 try

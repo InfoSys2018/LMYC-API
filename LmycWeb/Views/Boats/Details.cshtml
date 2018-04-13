@@ -29,6 +29,16 @@
             @Html.DisplayFor(model => model.Status)
         </dd>
         <dt>
+            @Html.DisplayNameFor(model => model.Photo)
+        </dt>
+        <dd>
+            @{
+                var base64 = Convert.ToBase64String(Model.Photo);
+                var imgsrc = String.Format("data:image/gif;base64, {0}", base64);
+            }
+            <img src="@imgsrc" style="width:100px; height:100px;" />
+        </dd>
+        <dt>
             @Html.DisplayNameFor(model => model.Description)
         </dt>
         <dd>
