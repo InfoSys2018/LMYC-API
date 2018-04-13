@@ -46,7 +46,7 @@ namespace LmycWeb.ViewModels.AccountViewModels
         public string Street { get; set; }
 
         [StringLength(100, MinimumLength = 1, ErrorMessage = "City field must be between 1 & 100 characters")]
-        [Required(ErrorMessage = "Street field is required.")]
+        [Required(ErrorMessage = "City field is required.")]
         [DataType(DataType.Text)]
         public string City { get; set; }
 
@@ -90,7 +90,7 @@ namespace LmycWeb.ViewModels.AccountViewModels
         [Required(ErrorMessage = "Your sailing experience is needed.")]
         [Display(Name = "Sailing Experience")]
         public string SailingExperience { get; set; }
-
+        
         [Display(Name = "Emergency Contact Name")]
         public string EmergencyContactName1 { get; set; }
 
