@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +12,11 @@ using Microsoft.Extensions.DependencyInjection;
 using LmycWeb.Data;
 using LmycWeb.Models;
 using LmycWeb.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LmycWeb.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class DocumentsController : Controller
     {
         private readonly ApplicationDbContext _context;
