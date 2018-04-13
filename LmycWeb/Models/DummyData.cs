@@ -45,7 +45,7 @@ namespace LmycWeb.Models
                         BoatId = "B03",
                         Name = "Lightcure",
                         CreditsPerHour = 6,
-                        Status = "Out-of Service",
+                        Status = "Operational",
                         Photo = File.ReadAllBytes(path + "\\images\\lightcure.jpg"),
                         Description = "She is one of our most popular boats, being a good sailor and comfortable while cruising.\nShe sleeps 5 adults comfortably. She was refitted in 2005 and is powered by a remote controlled Yamaha outboard.\nLightcure has a BBQ, cockpit table, asymmetrical spinnaker and all the extras to be comfortable for cruising.She is also rigged for use in local sailboat races.",
                         Length = 27,
@@ -57,7 +57,7 @@ namespace LmycWeb.Models
                         BoatId = "B04",
                         Name = "Frankie",
                         CreditsPerHour = 6,
-                        Status = "Out-of Service",
+                        Status = "Operational",
                         Photo = File.ReadAllBytes(path + "\\images\\frankie.jpg"),
                         Description = "She is designated as a “day sailor”, and is available for use in Semiahmoo Bay.\nShe is outfitted with some of the amenities for cruising and may be used occasionally for overnight trips.\nShe might sleep 4 adults comfortably.Frankie has a spray dodger and is powered by a Yamaha outboard.",
                         Length = 25,
@@ -69,7 +69,7 @@ namespace LmycWeb.Models
                         BoatId = "B05",
                         Name = "White Swan",
                         CreditsPerHour = 6,
-                        Status = "Out-of Service",
+                        Status = "Operational",
                         Photo = File.ReadAllBytes(path + "\\images\\whiteswan.jpg"),
                         Description = "She is a cruising boat, with a spray dodger, inboard diesel engine and enclosed head.\nWhite Swan is popular for longer trips to the local islands.She sleeps 4 adults very comfortably with a private aft cabin and V-berth.",
                         Length = 28,
@@ -307,31 +307,37 @@ namespace LmycWeb.Models
             {
                 new ClassificationCode
                 {
+                    CodeId = "Boat Main - Hard",
                     Classification = "Boat Maint - Hard"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Boat Maint - Monthly",
                     Classification = "Boat Maint - Monthly"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Training - Cruiser Skipper",
                     Classification = "Training - Cruise Skipper"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Training - Day Skipper",
                     Classification = "Training - Day Skipper"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Executive",
                     Classification = "Executive"
                 },
 
                 new ClassificationCode
                 {
+                    CodeId = "Winter Watch",
                     Classification = "Winter Watch"
                 }
             };
@@ -388,6 +394,28 @@ namespace LmycWeb.Models
                     UserId = ReportUser2.Id,
                     Code = ClassCode3,
                     CodeId = ClassCode3.CodeId,
+                },
+                new Report
+                {
+                    Content = "Test Report 4",
+                    Hours = 5,
+                    Approved = false,
+                    DateCreated = DateTime.Now,
+                    User = ReportUser1,
+                    UserId = ReportUser1.Id,
+                    Code = ClassCode1,
+                    CodeId = ClassCode1.CodeId,
+                },
+                new Report
+                {
+                    Content = "Test Report 5",
+                    Hours = 2,
+                    Approved = false,
+                    DateCreated = DateTime.Now,
+                    User = ReportUser1,
+                    UserId = ReportUser1.Id,
+                    Code = ClassCode1,
+                    CodeId = ClassCode1.CodeId,
                 }
             };
             return Reports;
