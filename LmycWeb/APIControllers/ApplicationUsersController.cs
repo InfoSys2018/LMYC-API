@@ -39,8 +39,13 @@ namespace LmycWeb.APIControllers
             {
                 return BadRequest(ModelState);
             }
-
+            
             var applicationUser = await _context.ApplicationUser.SingleOrDefaultAsync(m => m.UserName == username);
+            var emergencyContacts = await _context.EmergencyContacts.SingleOrDefaultAsync(c => c.EmergencyContactId == applicationUser.EmergencyContactId);
+            applicationUser.EmergencyContacts.Name1 = emergencyContacts.Name1;
+            applicationUser.EmergencyContacts.Phone1 = emergencyContacts.Phone1;
+            applicationUser.EmergencyContacts.Name2 = emergencyContacts.Name2;
+            applicationUser.EmergencyContacts.Phone2 = emergencyContacts.Phone2;
 
             if (applicationUser == null)
             {
