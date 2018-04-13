@@ -15,7 +15,6 @@ namespace LmycWeb.APIControllers
 {
     [Produces("application/json")]
     [Route("api/boats")]
-    [Authorize(AuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     [EnableCors("CorsPolicy")]
     public class BoatsApiController : Controller
     {
@@ -53,7 +52,7 @@ namespace LmycWeb.APIControllers
         }
 
         // PUT: api/BoatsApi/5
-        [HttpPut("{id}")]
+        /*[HttpPut("{id}")]
         public async Task<IActionResult> PutBoat([FromRoute] string id, [FromBody] Boat boat)
         {
             if (!ModelState.IsValid)
@@ -121,7 +120,7 @@ namespace LmycWeb.APIControllers
             await _context.SaveChangesAsync();
 
             return Ok(boat);
-        }
+        }*/
 
         private bool BoatExists(string id)
         {
