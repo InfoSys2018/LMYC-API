@@ -11,7 +11,7 @@ using System;
 namespace LmycWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180413045230_Initial DB")]
+    [Migration("20180413052036_Initial DB")]
     partial class InitialDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,8 @@ namespace LmycWeb.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<string>("EmergencyContactId");
+                    b.Property<string>("EmergencyContactId")
+                        .IsRequired();
 
                     b.Property<string>("FirstName");
 
@@ -170,6 +171,30 @@ namespace LmycWeb.Migrations
                     b.HasKey("CodeId");
 
                     b.ToTable("ClassificationCodes");
+                });
+
+            modelBuilder.Entity("LmycWeb.Models.Contact", b =>
+                {
+                    b.Property<string>("ContactId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email")
+                        .IsRequired();
+
+                    b.Property<string>("FirstName")
+                        .IsRequired();
+
+                    b.Property<string>("LastName")
+                        .IsRequired();
+
+                    b.Property<string>("Other");
+
+                    b.Property<string>("Subject")
+                        .IsRequired();
+
+                    b.HasKey("ContactId");
+
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("LmycWeb.Models.Document", b =>
@@ -515,7 +540,8 @@ namespace LmycWeb.Migrations
                 {
                     b.HasOne("LmycWeb.Models.EmergencyContact", "EmergencyContacts")
                         .WithMany()
-                        .HasForeignKey("EmergencyContactId");
+                        .HasForeignKey("EmergencyContactId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("LmycWeb.Models.Booking", b =>
